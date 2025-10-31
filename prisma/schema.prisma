@@ -1,0 +1,77 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model roles {
+  id   BigInt  @id @default(autoincrement())
+  name String  @unique
+  user users[]
+}
+
+model users {
+  id             BigInt           @id @default(autoincrement())
+  username       String           @unique
+  password       String
+  role_id        BigInt
+  purok          String?
+  bills          bills[]
+  issues         issues[]
+  meter_readings meter_readings[]
+  notifications  notifications[]
+  role           roles            @relation(fields: [role_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model meter_readings {
+  id            BigInt   @id @default(autoincrement())
+  user_id       BigInt
+  reading_date  DateTime @db.Date
+  reading_value Decimal  @db.Decimal
+  image_url     String?
+  bills         bills[]
+  user          users    @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model bills {
+  id               BigInt         @id @default(autoincrement())
+  user_id          BigInt
+  meter_reading_id BigInt
+  amount_due       Decimal        @db.Decimal
+  due_date         DateTime       @db.Date
+  is_paid          Boolean?       @default(false)
+  meter_reading    meter_readings @relation(fields: [meter_reading_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user             users          @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  payments         payments[]
+}
+
+model payments {
+  id             BigInt   @id @default(autoincrement())
+  bill_id        BigInt
+  payment_date   DateTime @db.Date
+  payment_method String
+  amount_paid    Decimal  @db.Decimal
+  bill           bills    @relation(fields: [bill_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model issues {
+  id            BigInt    @id @default(autoincrement())
+  user_id       BigInt
+  description   String
+  reported_date DateTime  @db.Date
+  is_resolved   Boolean?  @default(false)
+  resolved_date DateTime? @db.Date
+  user          users     @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model notifications {
+  id                BigInt   @id @default(autoincrement())
+  user_id           BigInt
+  message           String
+  notification_date DateTime @db.Date
+  user              users    @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
