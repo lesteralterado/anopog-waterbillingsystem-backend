@@ -59,7 +59,7 @@ io.on("connection", (socket) => {
   });
 });
 
-const PAYMONGO_SECRET_KEY = process.env.PAYMONGO_SECRET_KEY || 'sk_test_Wkg84PBjXS9Pf88fCqphHEuH';
+const PAYMONGO_SECRET_KEY = process.env.PAYMONGO_SECRET_KEY;
 const PAYMONGO_API_URL = 'https://api.paymongo.com/v1';
 
 // Create axios instance with authentication
