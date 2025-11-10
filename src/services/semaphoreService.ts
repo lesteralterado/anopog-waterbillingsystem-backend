@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const SEMAPHORE_API_KEY = process.env.SEMAPHORE_API_KEY;
-const SEMAPHORE_URL = " https://api.semaphore.co/api/v4/messages";
+const SEMAPHORE_URL = "https://api.semaphore.co/api/v4/messages";
 
 export async function sendSMS(to: string, message: string) {
   try {
@@ -19,7 +19,7 @@ export async function sendSMS(to: string, message: string) {
     const response = await axios.post(SEMAPHORE_URL, {
       apikey: SEMAPHORE_API_KEY,
       number: cleanNumber,
-      message
+      message: "Hello, this is ANOPOG WATER BILLING and you have created your ACCOUNT SUCCESSFULLY. Please login to your account to view your billing details.",
       // Removed sendername as it's causing issues - will use default
     });
 

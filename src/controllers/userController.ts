@@ -208,6 +208,8 @@ export async function loginUser(req: Request, res: Response) {
       }
     });
 
+    const allUsers = await prisma.users.findMany()
+
     if (!user) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
@@ -236,7 +238,7 @@ export async function loginUser(req: Request, res: Response) {
         id: user.id.toString(),
         username: user.username,
         role: user.role.name,
-        purok: user.purok
+        // purok: ,
       }
     });
   } catch (error: any) {

@@ -19,12 +19,18 @@ model users {
   username       String           @unique
   password       String
   role_id        BigInt
-  purok          String?
   bills          bills[]
   issues         issues[]
   meter_readings meter_readings[]
   notifications  notifications[]
   role           roles            @relation(fields: [role_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  purok          puroks[]         @relation("puroksTousers")
+}
+
+model puroks {
+  id    BigInt  @id @default(autoincrement())
+  name  String  @unique
+  users users[] @relation("puroksTousers")
 }
 
 model meter_readings {
