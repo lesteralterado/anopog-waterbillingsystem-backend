@@ -66,7 +66,7 @@ const PAYMONGO_API_URL = 'https://api.paymongo.com/v1';
 const paymongoAPI = axios.create({
   baseURL: PAYMONGO_API_URL,
   auth: {
-    username: PAYMONGO_SECRET_KEY,
+    username: PAYMONGO_SECRET_KEY || '',
     password: '' // Leave password empty for secret key authentication
   },
   headers: {

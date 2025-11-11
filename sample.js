@@ -1,10 +1,6 @@
 {
 // "clientSubmissionId": "7c3f2a76-3a2b-4d8a-9cfc-0b5f2d6e9abc",
 // Make some changes in order to match schema posgresql
-// customerId -> user_id
-// recordedAt -> reading_date
-// currentReading -> reading_value
-// url -> image_url
 
 "customerId": "f3912e8a-1f2b-4b6c-8e34-123456789abc",
 "billId": "b5a2fa3f-8c9d-11eb-8dcd-0242ac130003",
