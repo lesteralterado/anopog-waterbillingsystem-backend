@@ -18,6 +18,7 @@ import {
   loginUser
 } from './controllers/userController';
 import { sendSMSMessage } from './controllers/smsController';
+import { createPayment } from './services/paymentsService';
 
 const app = express();
 const server = http.createServer(app);
@@ -163,6 +164,43 @@ app.post("/api/login", loginUser);
 
 // SMS Routes
 app.post("/api/send-sms", sendSMSMessage);
+
+// Route: Record a payment from frontend
+app.post("/api/payments", async (req: Request, res: Response) => {
+  try {
+    const { bill_id, payment_date, payment_method, amount_paid } = req.body;
+
+    if (!bill_id || !payment_date || !payment_method || amount_paid === undefined) {
+      return res.status(400).json({ message: "Missing required fields: bill_id, payment_date, payment_method, amount_paid" });
+    }
+
+    // Create payment (DB)
+    const newPayment = await createPayment({ bill_id, payment_date, payment_method, amount_paid });
+
+    // Emit real-time event to admins
+    io.emit("newPayment", {
+      message: `Payment received for bill ID: ${bill_id}`,
+      data: newPayment,
+    });
+
+    // Save notification for the user tied to the bill (if we can find it)
+    const billRecord = await prisma.bills.findUnique({ where: { id: BigInt(bill_id) } });
+    if (billRecord && billRecord.user_id) {
+      await prisma.notifications.create({
+        data: {
+          user_id: billRecord.user_id,
+          message: `Payment received for your bill (${bill_id}).`,
+          notification_date: new Date(),
+        },
+      });
+    }
+
+    res.status(201).json({ success: true, newPayment });
+  } catch (error: any) {
+    console.error("Payment Error:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
 
 const PORT = process.env.PORT || 4000;
 server.listen(PORT, () => console.log(`🚀 Server running at http://localhost:${PORT}`));
