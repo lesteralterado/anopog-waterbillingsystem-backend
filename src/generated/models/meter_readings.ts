@@ -439,10 +439,6 @@ export type DecimalFieldUpdateOperationsInput = {
   divide?: runtime.Decimal | runtime.DecimalJsLike | number | string
 }
 
-export type NullableStringFieldUpdateOperationsInput = {
-  set?: string | null
-}
-
 export type meter_readingsCreateNestedOneWithoutBillsInput = {
   create?: Prisma.XOR<Prisma.meter_readingsCreateWithoutBillsInput, Prisma.meter_readingsUncheckedCreateWithoutBillsInput>
   connectOrCreate?: Prisma.meter_readingsCreateOrConnectWithoutBillsInput

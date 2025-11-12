@@ -24,7 +24,17 @@ model users {
   meter_readings meter_readings[]
   notifications  notifications[]
   role           roles            @relation(fields: [role_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  purok          puroks[]         @relation("puroksTousers")
+  // Keep a relation to the `puroks` table (many-to-many) and also store a simple
+  // scalar `purok` value for compatibility with the frontend payload.
+  puroks         puroks[]         @relation("puroksTousers")
+  purok          String?
+
+  // Additional profile fields requested by the frontend
+  meter_number   String?
+  full_name      String?
+  address        String?
+  phone          String?
+  email          String?
 }
 
 model puroks {

@@ -41,6 +41,12 @@ export type UsersMinAggregateOutputType = {
   username: string | null
   password: string | null
   role_id: bigint | null
+  purok: string | null
+  meter_number: string | null
+  full_name: string | null
+  address: string | null
+  phone: string | null
+  email: string | null
 }
 
 export type UsersMaxAggregateOutputType = {
@@ -48,6 +54,12 @@ export type UsersMaxAggregateOutputType = {
   username: string | null
   password: string | null
   role_id: bigint | null
+  purok: string | null
+  meter_number: string | null
+  full_name: string | null
+  address: string | null
+  phone: string | null
+  email: string | null
 }
 
 export type UsersCountAggregateOutputType = {
@@ -55,6 +67,12 @@ export type UsersCountAggregateOutputType = {
   username: number
   password: number
   role_id: number
+  purok: number
+  meter_number: number
+  full_name: number
+  address: number
+  phone: number
+  email: number
   _all: number
 }
 
@@ -74,6 +92,12 @@ export type UsersMinAggregateInputType = {
   username?: true
   password?: true
   role_id?: true
+  purok?: true
+  meter_number?: true
+  full_name?: true
+  address?: true
+  phone?: true
+  email?: true
 }
 
 export type UsersMaxAggregateInputType = {
@@ -81,6 +105,12 @@ export type UsersMaxAggregateInputType = {
   username?: true
   password?: true
   role_id?: true
+  purok?: true
+  meter_number?: true
+  full_name?: true
+  address?: true
+  phone?: true
+  email?: true
 }
 
 export type UsersCountAggregateInputType = {
@@ -88,6 +118,12 @@ export type UsersCountAggregateInputType = {
   username?: true
   password?: true
   role_id?: true
+  purok?: true
+  meter_number?: true
+  full_name?: true
+  address?: true
+  phone?: true
+  email?: true
   _all?: true
 }
 
@@ -182,6 +218,12 @@ export type UsersGroupByOutputType = {
   username: string
   password: string
   role_id: bigint
+  purok: string | null
+  meter_number: string | null
+  full_name: string | null
+  address: string | null
+  phone: string | null
+  email: string | null
   _count: UsersCountAggregateOutputType | null
   _avg: UsersAvgAggregateOutputType | null
   _sum: UsersSumAggregateOutputType | null
@@ -212,12 +254,18 @@ export type usersWhereInput = {
   username?: Prisma.StringFilter<"users"> | string
   password?: Prisma.StringFilter<"users"> | string
   role_id?: Prisma.BigIntFilter<"users"> | bigint | number
+  purok?: Prisma.StringNullableFilter<"users"> | string | null
+  meter_number?: Prisma.StringNullableFilter<"users"> | string | null
+  full_name?: Prisma.StringNullableFilter<"users"> | string | null
+  address?: Prisma.StringNullableFilter<"users"> | string | null
+  phone?: Prisma.StringNullableFilter<"users"> | string | null
+  email?: Prisma.StringNullableFilter<"users"> | string | null
   bills?: Prisma.BillsListRelationFilter
   issues?: Prisma.IssuesListRelationFilter
   meter_readings?: Prisma.Meter_readingsListRelationFilter
   notifications?: Prisma.NotificationsListRelationFilter
   role?: Prisma.XOR<Prisma.RolesScalarRelationFilter, Prisma.rolesWhereInput>
-  purok?: Prisma.PuroksListRelationFilter
+  puroks?: Prisma.PuroksListRelationFilter
 }
 
 export type usersOrderByWithRelationInput = {
@@ -225,12 +273,18 @@ export type usersOrderByWithRelationInput = {
   username?: Prisma.SortOrder
   password?: Prisma.SortOrder
   role_id?: Prisma.SortOrder
+  purok?: Prisma.SortOrderInput | Prisma.SortOrder
+  meter_number?: Prisma.SortOrderInput | Prisma.SortOrder
+  full_name?: Prisma.SortOrderInput | Prisma.SortOrder
+  address?: Prisma.SortOrderInput | Prisma.SortOrder
+  phone?: Prisma.SortOrderInput | Prisma.SortOrder
+  email?: Prisma.SortOrderInput | Prisma.SortOrder
   bills?: Prisma.billsOrderByRelationAggregateInput
   issues?: Prisma.issuesOrderByRelationAggregateInput
   meter_readings?: Prisma.meter_readingsOrderByRelationAggregateInput
   notifications?: Prisma.notificationsOrderByRelationAggregateInput
   role?: Prisma.rolesOrderByWithRelationInput
-  purok?: Prisma.puroksOrderByRelationAggregateInput
+  puroks?: Prisma.puroksOrderByRelationAggregateInput
 }
 
 export type usersWhereUniqueInput = Prisma.AtLeast<{
@@ -241,12 +295,18 @@ export type usersWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.usersWhereInput | Prisma.usersWhereInput[]
   password?: Prisma.StringFilter<"users"> | string
   role_id?: Prisma.BigIntFilter<"users"> | bigint | number
+  purok?: Prisma.StringNullableFilter<"users"> | string | null
+  meter_number?: Prisma.StringNullableFilter<"users"> | string | null
+  full_name?: Prisma.StringNullableFilter<"users"> | string | null
+  address?: Prisma.StringNullableFilter<"users"> | string | null
+  phone?: Prisma.StringNullableFilter<"users"> | string | null
+  email?: Prisma.StringNullableFilter<"users"> | string | null
   bills?: Prisma.BillsListRelationFilter
   issues?: Prisma.IssuesListRelationFilter
   meter_readings?: Prisma.Meter_readingsListRelationFilter
   notifications?: Prisma.NotificationsListRelationFilter
   role?: Prisma.XOR<Prisma.RolesScalarRelationFilter, Prisma.rolesWhereInput>
-  purok?: Prisma.PuroksListRelationFilter
+  puroks?: Prisma.PuroksListRelationFilter
 }, "id" | "username">
 
 export type usersOrderByWithAggregationInput = {
@@ -254,6 +314,12 @@ export type usersOrderByWithAggregationInput = {
   username?: Prisma.SortOrder
   password?: Prisma.SortOrder
   role_id?: Prisma.SortOrder
+  purok?: Prisma.SortOrderInput | Prisma.SortOrder
+  meter_number?: Prisma.SortOrderInput | Prisma.SortOrder
+  full_name?: Prisma.SortOrderInput | Prisma.SortOrder
+  address?: Prisma.SortOrderInput | Prisma.SortOrder
+  phone?: Prisma.SortOrderInput | Prisma.SortOrder
+  email?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.usersCountOrderByAggregateInput
   _avg?: Prisma.usersAvgOrderByAggregateInput
   _max?: Prisma.usersMaxOrderByAggregateInput
@@ -269,18 +335,30 @@ export type usersScalarWhereWithAggregatesInput = {
   username?: Prisma.StringWithAggregatesFilter<"users"> | string
   password?: Prisma.StringWithAggregatesFilter<"users"> | string
   role_id?: Prisma.BigIntWithAggregatesFilter<"users"> | bigint | number
+  purok?: Prisma.StringNullableWithAggregatesFilter<"users"> | string | null
+  meter_number?: Prisma.StringNullableWithAggregatesFilter<"users"> | string | null
+  full_name?: Prisma.StringNullableWithAggregatesFilter<"users"> | string | null
+  address?: Prisma.StringNullableWithAggregatesFilter<"users"> | string | null
+  phone?: Prisma.StringNullableWithAggregatesFilter<"users"> | string | null
+  email?: Prisma.StringNullableWithAggregatesFilter<"users"> | string | null
 }
 
 export type usersCreateInput = {
   id?: bigint | number
   username: string
   password: string
+  purok?: string | null
+  meter_number?: string | null
+  full_name?: string | null
+  address?: string | null
+  phone?: string | null
+  email?: string | null
   bills?: Prisma.billsCreateNestedManyWithoutUserInput
   issues?: Prisma.issuesCreateNestedManyWithoutUserInput
   meter_readings?: Prisma.meter_readingsCreateNestedManyWithoutUserInput
   notifications?: Prisma.notificationsCreateNestedManyWithoutUserInput
   role: Prisma.rolesCreateNestedOneWithoutUserInput
-  purok?: Prisma.puroksCreateNestedManyWithoutUsersInput
+  puroks?: Prisma.puroksCreateNestedManyWithoutUsersInput
 }
 
 export type usersUncheckedCreateInput = {
@@ -288,23 +366,35 @@ export type usersUncheckedCreateInput = {
   username: string
   password: string
   role_id: bigint | number
+  purok?: string | null
+  meter_number?: string | null
+  full_name?: string | null
+  address?: string | null
+  phone?: string | null
+  email?: string | null
   bills?: Prisma.billsUncheckedCreateNestedManyWithoutUserInput
   issues?: Prisma.issuesUncheckedCreateNestedManyWithoutUserInput
   meter_readings?: Prisma.meter_readingsUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.notificationsUncheckedCreateNestedManyWithoutUserInput
-  purok?: Prisma.puroksUncheckedCreateNestedManyWithoutUsersInput
+  puroks?: Prisma.puroksUncheckedCreateNestedManyWithoutUsersInput
 }
 
 export type usersUpdateInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   username?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  purok?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  meter_number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  full_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bills?: Prisma.billsUpdateManyWithoutUserNestedInput
   issues?: Prisma.issuesUpdateManyWithoutUserNestedInput
   meter_readings?: Prisma.meter_readingsUpdateManyWithoutUserNestedInput
   notifications?: Prisma.notificationsUpdateManyWithoutUserNestedInput
   role?: Prisma.rolesUpdateOneRequiredWithoutUserNestedInput
-  purok?: Prisma.puroksUpdateManyWithoutUsersNestedInput
+  puroks?: Prisma.puroksUpdateManyWithoutUsersNestedInput
 }
 
 export type usersUncheckedUpdateInput = {
@@ -312,11 +402,17 @@ export type usersUncheckedUpdateInput = {
   username?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
   role_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  purok?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  meter_number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  full_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bills?: Prisma.billsUncheckedUpdateManyWithoutUserNestedInput
   issues?: Prisma.issuesUncheckedUpdateManyWithoutUserNestedInput
   meter_readings?: Prisma.meter_readingsUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.notificationsUncheckedUpdateManyWithoutUserNestedInput
-  purok?: Prisma.puroksUncheckedUpdateManyWithoutUsersNestedInput
+  puroks?: Prisma.puroksUncheckedUpdateManyWithoutUsersNestedInput
 }
 
 export type usersCreateManyInput = {
@@ -324,12 +420,24 @@ export type usersCreateManyInput = {
   username: string
   password: string
   role_id: bigint | number
+  purok?: string | null
+  meter_number?: string | null
+  full_name?: string | null
+  address?: string | null
+  phone?: string | null
+  email?: string | null
 }
 
 export type usersUpdateManyMutationInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   username?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  purok?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  meter_number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  full_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type usersUncheckedUpdateManyInput = {
@@ -337,6 +445,12 @@ export type usersUncheckedUpdateManyInput = {
   username?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
   role_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  purok?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  meter_number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  full_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type UsersListRelationFilter = {
@@ -354,6 +468,12 @@ export type usersCountOrderByAggregateInput = {
   username?: Prisma.SortOrder
   password?: Prisma.SortOrder
   role_id?: Prisma.SortOrder
+  purok?: Prisma.SortOrder
+  meter_number?: Prisma.SortOrder
+  full_name?: Prisma.SortOrder
+  address?: Prisma.SortOrder
+  phone?: Prisma.SortOrder
+  email?: Prisma.SortOrder
 }
 
 export type usersAvgOrderByAggregateInput = {
@@ -366,6 +486,12 @@ export type usersMaxOrderByAggregateInput = {
   username?: Prisma.SortOrder
   password?: Prisma.SortOrder
   role_id?: Prisma.SortOrder
+  purok?: Prisma.SortOrder
+  meter_number?: Prisma.SortOrder
+  full_name?: Prisma.SortOrder
+  address?: Prisma.SortOrder
+  phone?: Prisma.SortOrder
+  email?: Prisma.SortOrder
 }
 
 export type usersMinOrderByAggregateInput = {
@@ -373,6 +499,12 @@ export type usersMinOrderByAggregateInput = {
   username?: Prisma.SortOrder
   password?: Prisma.SortOrder
   role_id?: Prisma.SortOrder
+  purok?: Prisma.SortOrder
+  meter_number?: Prisma.SortOrder
+  full_name?: Prisma.SortOrder
+  address?: Prisma.SortOrder
+  phone?: Prisma.SortOrder
+  email?: Prisma.SortOrder
 }
 
 export type usersSumOrderByAggregateInput = {
@@ -427,41 +559,45 @@ export type usersUncheckedUpdateManyWithoutRoleNestedInput = {
   deleteMany?: Prisma.usersScalarWhereInput | Prisma.usersScalarWhereInput[]
 }
 
-export type usersCreateNestedManyWithoutPurokInput = {
-  create?: Prisma.XOR<Prisma.usersCreateWithoutPurokInput, Prisma.usersUncheckedCreateWithoutPurokInput> | Prisma.usersCreateWithoutPurokInput[] | Prisma.usersUncheckedCreateWithoutPurokInput[]
-  connectOrCreate?: Prisma.usersCreateOrConnectWithoutPurokInput | Prisma.usersCreateOrConnectWithoutPurokInput[]
+export type NullableStringFieldUpdateOperationsInput = {
+  set?: string | null
+}
+
+export type usersCreateNestedManyWithoutPuroksInput = {
+  create?: Prisma.XOR<Prisma.usersCreateWithoutPuroksInput, Prisma.usersUncheckedCreateWithoutPuroksInput> | Prisma.usersCreateWithoutPuroksInput[] | Prisma.usersUncheckedCreateWithoutPuroksInput[]
+  connectOrCreate?: Prisma.usersCreateOrConnectWithoutPuroksInput | Prisma.usersCreateOrConnectWithoutPuroksInput[]
   connect?: Prisma.usersWhereUniqueInput | Prisma.usersWhereUniqueInput[]
 }
 
-export type usersUncheckedCreateNestedManyWithoutPurokInput = {
-  create?: Prisma.XOR<Prisma.usersCreateWithoutPurokInput, Prisma.usersUncheckedCreateWithoutPurokInput> | Prisma.usersCreateWithoutPurokInput[] | Prisma.usersUncheckedCreateWithoutPurokInput[]
-  connectOrCreate?: Prisma.usersCreateOrConnectWithoutPurokInput | Prisma.usersCreateOrConnectWithoutPurokInput[]
+export type usersUncheckedCreateNestedManyWithoutPuroksInput = {
+  create?: Prisma.XOR<Prisma.usersCreateWithoutPuroksInput, Prisma.usersUncheckedCreateWithoutPuroksInput> | Prisma.usersCreateWithoutPuroksInput[] | Prisma.usersUncheckedCreateWithoutPuroksInput[]
+  connectOrCreate?: Prisma.usersCreateOrConnectWithoutPuroksInput | Prisma.usersCreateOrConnectWithoutPuroksInput[]
   connect?: Prisma.usersWhereUniqueInput | Prisma.usersWhereUniqueInput[]
 }
 
-export type usersUpdateManyWithoutPurokNestedInput = {
-  create?: Prisma.XOR<Prisma.usersCreateWithoutPurokInput, Prisma.usersUncheckedCreateWithoutPurokInput> | Prisma.usersCreateWithoutPurokInput[] | Prisma.usersUncheckedCreateWithoutPurokInput[]
-  connectOrCreate?: Prisma.usersCreateOrConnectWithoutPurokInput | Prisma.usersCreateOrConnectWithoutPurokInput[]
-  upsert?: Prisma.usersUpsertWithWhereUniqueWithoutPurokInput | Prisma.usersUpsertWithWhereUniqueWithoutPurokInput[]
+export type usersUpdateManyWithoutPuroksNestedInput = {
+  create?: Prisma.XOR<Prisma.usersCreateWithoutPuroksInput, Prisma.usersUncheckedCreateWithoutPuroksInput> | Prisma.usersCreateWithoutPuroksInput[] | Prisma.usersUncheckedCreateWithoutPuroksInput[]
+  connectOrCreate?: Prisma.usersCreateOrConnectWithoutPuroksInput | Prisma.usersCreateOrConnectWithoutPuroksInput[]
+  upsert?: Prisma.usersUpsertWithWhereUniqueWithoutPuroksInput | Prisma.usersUpsertWithWhereUniqueWithoutPuroksInput[]
   set?: Prisma.usersWhereUniqueInput | Prisma.usersWhereUniqueInput[]
   disconnect?: Prisma.usersWhereUniqueInput | Prisma.usersWhereUniqueInput[]
   delete?: Prisma.usersWhereUniqueInput | Prisma.usersWhereUniqueInput[]
   connect?: Prisma.usersWhereUniqueInput | Prisma.usersWhereUniqueInput[]
-  update?: Prisma.usersUpdateWithWhereUniqueWithoutPurokInput | Prisma.usersUpdateWithWhereUniqueWithoutPurokInput[]
-  updateMany?: Prisma.usersUpdateManyWithWhereWithoutPurokInput | Prisma.usersUpdateManyWithWhereWithoutPurokInput[]
+  update?: Prisma.usersUpdateWithWhereUniqueWithoutPuroksInput | Prisma.usersUpdateWithWhereUniqueWithoutPuroksInput[]
+  updateMany?: Prisma.usersUpdateManyWithWhereWithoutPuroksInput | Prisma.usersUpdateManyWithWhereWithoutPuroksInput[]
   deleteMany?: Prisma.usersScalarWhereInput | Prisma.usersScalarWhereInput[]
 }
 
-export type usersUncheckedUpdateManyWithoutPurokNestedInput = {
-  create?: Prisma.XOR<Prisma.usersCreateWithoutPurokInput, Prisma.usersUncheckedCreateWithoutPurokInput> | Prisma.usersCreateWithoutPurokInput[] | Prisma.usersUncheckedCreateWithoutPurokInput[]
-  connectOrCreate?: Prisma.usersCreateOrConnectWithoutPurokInput | Prisma.usersCreateOrConnectWithoutPurokInput[]
-  upsert?: Prisma.usersUpsertWithWhereUniqueWithoutPurokInput | Prisma.usersUpsertWithWhereUniqueWithoutPurokInput[]
+export type usersUncheckedUpdateManyWithoutPuroksNestedInput = {
+  create?: Prisma.XOR<Prisma.usersCreateWithoutPuroksInput, Prisma.usersUncheckedCreateWithoutPuroksInput> | Prisma.usersCreateWithoutPuroksInput[] | Prisma.usersUncheckedCreateWithoutPuroksInput[]
+  connectOrCreate?: Prisma.usersCreateOrConnectWithoutPuroksInput | Prisma.usersCreateOrConnectWithoutPuroksInput[]
+  upsert?: Prisma.usersUpsertWithWhereUniqueWithoutPuroksInput | Prisma.usersUpsertWithWhereUniqueWithoutPuroksInput[]
   set?: Prisma.usersWhereUniqueInput | Prisma.usersWhereUniqueInput[]
   disconnect?: Prisma.usersWhereUniqueInput | Prisma.usersWhereUniqueInput[]
   delete?: Prisma.usersWhereUniqueInput | Prisma.usersWhereUniqueInput[]
   connect?: Prisma.usersWhereUniqueInput | Prisma.usersWhereUniqueInput[]
-  update?: Prisma.usersUpdateWithWhereUniqueWithoutPurokInput | Prisma.usersUpdateWithWhereUniqueWithoutPurokInput[]
-  updateMany?: Prisma.usersUpdateManyWithWhereWithoutPurokInput | Prisma.usersUpdateManyWithWhereWithoutPurokInput[]
+  update?: Prisma.usersUpdateWithWhereUniqueWithoutPuroksInput | Prisma.usersUpdateWithWhereUniqueWithoutPuroksInput[]
+  updateMany?: Prisma.usersUpdateManyWithWhereWithoutPuroksInput | Prisma.usersUpdateManyWithWhereWithoutPuroksInput[]
   deleteMany?: Prisma.usersScalarWhereInput | Prisma.usersScalarWhereInput[]
 }
 
@@ -525,22 +661,34 @@ export type usersCreateWithoutRoleInput = {
   id?: bigint | number
   username: string
   password: string
+  purok?: string | null
+  meter_number?: string | null
+  full_name?: string | null
+  address?: string | null
+  phone?: string | null
+  email?: string | null
   bills?: Prisma.billsCreateNestedManyWithoutUserInput
   issues?: Prisma.issuesCreateNestedManyWithoutUserInput
   meter_readings?: Prisma.meter_readingsCreateNestedManyWithoutUserInput
   notifications?: Prisma.notificationsCreateNestedManyWithoutUserInput
-  purok?: Prisma.puroksCreateNestedManyWithoutUsersInput
+  puroks?: Prisma.puroksCreateNestedManyWithoutUsersInput
 }
 
 export type usersUncheckedCreateWithoutRoleInput = {
   id?: bigint | number
   username: string
   password: string
+  purok?: string | null
+  meter_number?: string | null
+  full_name?: string | null
+  address?: string | null
+  phone?: string | null
+  email?: string | null
   bills?: Prisma.billsUncheckedCreateNestedManyWithoutUserInput
   issues?: Prisma.issuesUncheckedCreateNestedManyWithoutUserInput
   meter_readings?: Prisma.meter_readingsUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.notificationsUncheckedCreateNestedManyWithoutUserInput
-  purok?: Prisma.puroksUncheckedCreateNestedManyWithoutUsersInput
+  puroks?: Prisma.puroksUncheckedCreateNestedManyWithoutUsersInput
 }
 
 export type usersCreateOrConnectWithoutRoleInput = {
@@ -577,12 +725,24 @@ export type usersScalarWhereInput = {
   username?: Prisma.StringFilter<"users"> | string
   password?: Prisma.StringFilter<"users"> | string
   role_id?: Prisma.BigIntFilter<"users"> | bigint | number
+  purok?: Prisma.StringNullableFilter<"users"> | string | null
+  meter_number?: Prisma.StringNullableFilter<"users"> | string | null
+  full_name?: Prisma.StringNullableFilter<"users"> | string | null
+  address?: Prisma.StringNullableFilter<"users"> | string | null
+  phone?: Prisma.StringNullableFilter<"users"> | string | null
+  email?: Prisma.StringNullableFilter<"users"> | string | null
 }
 
-export type usersCreateWithoutPurokInput = {
+export type usersCreateWithoutPuroksInput = {
   id?: bigint | number
   username: string
   password: string
+  purok?: string | null
+  meter_number?: string | null
+  full_name?: string | null
+  address?: string | null
+  phone?: string | null
+  email?: string | null
   bills?: Prisma.billsCreateNestedManyWithoutUserInput
   issues?: Prisma.issuesCreateNestedManyWithoutUserInput
   meter_readings?: Prisma.meter_readingsCreateNestedManyWithoutUserInput
@@ -590,47 +750,59 @@ export type usersCreateWithoutPurokInput = {
   role: Prisma.rolesCreateNestedOneWithoutUserInput
 }
 
-export type usersUncheckedCreateWithoutPurokInput = {
+export type usersUncheckedCreateWithoutPuroksInput = {
   id?: bigint | number
   username: string
   password: string
   role_id: bigint | number
+  purok?: string | null
+  meter_number?: string | null
+  full_name?: string | null
+  address?: string | null
+  phone?: string | null
+  email?: string | null
   bills?: Prisma.billsUncheckedCreateNestedManyWithoutUserInput
   issues?: Prisma.issuesUncheckedCreateNestedManyWithoutUserInput
   meter_readings?: Prisma.meter_readingsUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.notificationsUncheckedCreateNestedManyWithoutUserInput
 }
 
-export type usersCreateOrConnectWithoutPurokInput = {
+export type usersCreateOrConnectWithoutPuroksInput = {
   where: Prisma.usersWhereUniqueInput
-  create: Prisma.XOR<Prisma.usersCreateWithoutPurokInput, Prisma.usersUncheckedCreateWithoutPurokInput>
+  create: Prisma.XOR<Prisma.usersCreateWithoutPuroksInput, Prisma.usersUncheckedCreateWithoutPuroksInput>
 }
 
-export type usersUpsertWithWhereUniqueWithoutPurokInput = {
+export type usersUpsertWithWhereUniqueWithoutPuroksInput = {
   where: Prisma.usersWhereUniqueInput
-  update: Prisma.XOR<Prisma.usersUpdateWithoutPurokInput, Prisma.usersUncheckedUpdateWithoutPurokInput>
-  create: Prisma.XOR<Prisma.usersCreateWithoutPurokInput, Prisma.usersUncheckedCreateWithoutPurokInput>
+  update: Prisma.XOR<Prisma.usersUpdateWithoutPuroksInput, Prisma.usersUncheckedUpdateWithoutPuroksInput>
+  create: Prisma.XOR<Prisma.usersCreateWithoutPuroksInput, Prisma.usersUncheckedCreateWithoutPuroksInput>
 }
 
-export type usersUpdateWithWhereUniqueWithoutPurokInput = {
+export type usersUpdateWithWhereUniqueWithoutPuroksInput = {
   where: Prisma.usersWhereUniqueInput
-  data: Prisma.XOR<Prisma.usersUpdateWithoutPurokInput, Prisma.usersUncheckedUpdateWithoutPurokInput>
+  data: Prisma.XOR<Prisma.usersUpdateWithoutPuroksInput, Prisma.usersUncheckedUpdateWithoutPuroksInput>
 }
 
-export type usersUpdateManyWithWhereWithoutPurokInput = {
+export type usersUpdateManyWithWhereWithoutPuroksInput = {
   where: Prisma.usersScalarWhereInput
-  data: Prisma.XOR<Prisma.usersUpdateManyMutationInput, Prisma.usersUncheckedUpdateManyWithoutPurokInput>
+  data: Prisma.XOR<Prisma.usersUpdateManyMutationInput, Prisma.usersUncheckedUpdateManyWithoutPuroksInput>
 }
 
 export type usersCreateWithoutMeter_readingsInput = {
   id?: bigint | number
   username: string
   password: string
+  purok?: string | null
+  meter_number?: string | null
+  full_name?: string | null
+  address?: string | null
+  phone?: string | null
+  email?: string | null
   bills?: Prisma.billsCreateNestedManyWithoutUserInput
   issues?: Prisma.issuesCreateNestedManyWithoutUserInput
   notifications?: Prisma.notificationsCreateNestedManyWithoutUserInput
   role: Prisma.rolesCreateNestedOneWithoutUserInput
-  purok?: Prisma.puroksCreateNestedManyWithoutUsersInput
+  puroks?: Prisma.puroksCreateNestedManyWithoutUsersInput
 }
 
 export type usersUncheckedCreateWithoutMeter_readingsInput = {
@@ -638,10 +810,16 @@ export type usersUncheckedCreateWithoutMeter_readingsInput = {
   username: string
   password: string
   role_id: bigint | number
+  purok?: string | null
+  meter_number?: string | null
+  full_name?: string | null
+  address?: string | null
+  phone?: string | null
+  email?: string | null
   bills?: Prisma.billsUncheckedCreateNestedManyWithoutUserInput
   issues?: Prisma.issuesUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.notificationsUncheckedCreateNestedManyWithoutUserInput
-  purok?: Prisma.puroksUncheckedCreateNestedManyWithoutUsersInput
+  puroks?: Prisma.puroksUncheckedCreateNestedManyWithoutUsersInput
 }
 
 export type usersCreateOrConnectWithoutMeter_readingsInput = {
@@ -664,11 +842,17 @@ export type usersUpdateWithoutMeter_readingsInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   username?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  purok?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  meter_number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  full_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bills?: Prisma.billsUpdateManyWithoutUserNestedInput
   issues?: Prisma.issuesUpdateManyWithoutUserNestedInput
   notifications?: Prisma.notificationsUpdateManyWithoutUserNestedInput
   role?: Prisma.rolesUpdateOneRequiredWithoutUserNestedInput
-  purok?: Prisma.puroksUpdateManyWithoutUsersNestedInput
+  puroks?: Prisma.puroksUpdateManyWithoutUsersNestedInput
 }
 
 export type usersUncheckedUpdateWithoutMeter_readingsInput = {
@@ -676,21 +860,33 @@ export type usersUncheckedUpdateWithoutMeter_readingsInput = {
   username?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
   role_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  purok?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  meter_number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  full_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bills?: Prisma.billsUncheckedUpdateManyWithoutUserNestedInput
   issues?: Prisma.issuesUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.notificationsUncheckedUpdateManyWithoutUserNestedInput
-  purok?: Prisma.puroksUncheckedUpdateManyWithoutUsersNestedInput
+  puroks?: Prisma.puroksUncheckedUpdateManyWithoutUsersNestedInput
 }
 
 export type usersCreateWithoutBillsInput = {
   id?: bigint | number
   username: string
   password: string
+  purok?: string | null
+  meter_number?: string | null
+  full_name?: string | null
+  address?: string | null
+  phone?: string | null
+  email?: string | null
   issues?: Prisma.issuesCreateNestedManyWithoutUserInput
   meter_readings?: Prisma.meter_readingsCreateNestedManyWithoutUserInput
   notifications?: Prisma.notificationsCreateNestedManyWithoutUserInput
   role: Prisma.rolesCreateNestedOneWithoutUserInput
-  purok?: Prisma.puroksCreateNestedManyWithoutUsersInput
+  puroks?: Prisma.puroksCreateNestedManyWithoutUsersInput
 }
 
 export type usersUncheckedCreateWithoutBillsInput = {
@@ -698,10 +894,16 @@ export type usersUncheckedCreateWithoutBillsInput = {
   username: string
   password: string
   role_id: bigint | number
+  purok?: string | null
+  meter_number?: string | null
+  full_name?: string | null
+  address?: string | null
+  phone?: string | null
+  email?: string | null
   issues?: Prisma.issuesUncheckedCreateNestedManyWithoutUserInput
   meter_readings?: Prisma.meter_readingsUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.notificationsUncheckedCreateNestedManyWithoutUserInput
-  purok?: Prisma.puroksUncheckedCreateNestedManyWithoutUsersInput
+  puroks?: Prisma.puroksUncheckedCreateNestedManyWithoutUsersInput
 }
 
 export type usersCreateOrConnectWithoutBillsInput = {
@@ -724,11 +926,17 @@ export type usersUpdateWithoutBillsInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   username?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  purok?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  meter_number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  full_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issues?: Prisma.issuesUpdateManyWithoutUserNestedInput
   meter_readings?: Prisma.meter_readingsUpdateManyWithoutUserNestedInput
   notifications?: Prisma.notificationsUpdateManyWithoutUserNestedInput
   role?: Prisma.rolesUpdateOneRequiredWithoutUserNestedInput
-  purok?: Prisma.puroksUpdateManyWithoutUsersNestedInput
+  puroks?: Prisma.puroksUpdateManyWithoutUsersNestedInput
 }
 
 export type usersUncheckedUpdateWithoutBillsInput = {
@@ -736,21 +944,33 @@ export type usersUncheckedUpdateWithoutBillsInput = {
   username?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
   role_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  purok?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  meter_number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  full_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issues?: Prisma.issuesUncheckedUpdateManyWithoutUserNestedInput
   meter_readings?: Prisma.meter_readingsUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.notificationsUncheckedUpdateManyWithoutUserNestedInput
-  purok?: Prisma.puroksUncheckedUpdateManyWithoutUsersNestedInput
+  puroks?: Prisma.puroksUncheckedUpdateManyWithoutUsersNestedInput
 }
 
 export type usersCreateWithoutIssuesInput = {
   id?: bigint | number
   username: string
   password: string
+  purok?: string | null
+  meter_number?: string | null
+  full_name?: string | null
+  address?: string | null
+  phone?: string | null
+  email?: string | null
   bills?: Prisma.billsCreateNestedManyWithoutUserInput
   meter_readings?: Prisma.meter_readingsCreateNestedManyWithoutUserInput
   notifications?: Prisma.notificationsCreateNestedManyWithoutUserInput
   role: Prisma.rolesCreateNestedOneWithoutUserInput
-  purok?: Prisma.puroksCreateNestedManyWithoutUsersInput
+  puroks?: Prisma.puroksCreateNestedManyWithoutUsersInput
 }
 
 export type usersUncheckedCreateWithoutIssuesInput = {
@@ -758,10 +978,16 @@ export type usersUncheckedCreateWithoutIssuesInput = {
   username: string
   password: string
   role_id: bigint | number
+  purok?: string | null
+  meter_number?: string | null
+  full_name?: string | null
+  address?: string | null
+  phone?: string | null
+  email?: string | null
   bills?: Prisma.billsUncheckedCreateNestedManyWithoutUserInput
   meter_readings?: Prisma.meter_readingsUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.notificationsUncheckedCreateNestedManyWithoutUserInput
-  purok?: Prisma.puroksUncheckedCreateNestedManyWithoutUsersInput
+  puroks?: Prisma.puroksUncheckedCreateNestedManyWithoutUsersInput
 }
 
 export type usersCreateOrConnectWithoutIssuesInput = {
@@ -784,11 +1010,17 @@ export type usersUpdateWithoutIssuesInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   username?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  purok?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  meter_number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  full_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bills?: Prisma.billsUpdateManyWithoutUserNestedInput
   meter_readings?: Prisma.meter_readingsUpdateManyWithoutUserNestedInput
   notifications?: Prisma.notificationsUpdateManyWithoutUserNestedInput
   role?: Prisma.rolesUpdateOneRequiredWithoutUserNestedInput
-  purok?: Prisma.puroksUpdateManyWithoutUsersNestedInput
+  puroks?: Prisma.puroksUpdateManyWithoutUsersNestedInput
 }
 
 export type usersUncheckedUpdateWithoutIssuesInput = {
@@ -796,21 +1028,33 @@ export type usersUncheckedUpdateWithoutIssuesInput = {
   username?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
   role_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  purok?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  meter_number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  full_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bills?: Prisma.billsUncheckedUpdateManyWithoutUserNestedInput
   meter_readings?: Prisma.meter_readingsUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.notificationsUncheckedUpdateManyWithoutUserNestedInput
-  purok?: Prisma.puroksUncheckedUpdateManyWithoutUsersNestedInput
+  puroks?: Prisma.puroksUncheckedUpdateManyWithoutUsersNestedInput
 }
 
 export type usersCreateWithoutNotificationsInput = {
   id?: bigint | number
   username: string
   password: string
+  purok?: string | null
+  meter_number?: string | null
+  full_name?: string | null
+  address?: string | null
+  phone?: string | null
+  email?: string | null
   bills?: Prisma.billsCreateNestedManyWithoutUserInput
   issues?: Prisma.issuesCreateNestedManyWithoutUserInput
   meter_readings?: Prisma.meter_readingsCreateNestedManyWithoutUserInput
   role: Prisma.rolesCreateNestedOneWithoutUserInput
-  purok?: Prisma.puroksCreateNestedManyWithoutUsersInput
+  puroks?: Prisma.puroksCreateNestedManyWithoutUsersInput
 }
 
 export type usersUncheckedCreateWithoutNotificationsInput = {
@@ -818,10 +1062,16 @@ export type usersUncheckedCreateWithoutNotificationsInput = {
   username: string
   password: string
   role_id: bigint | number
+  purok?: string | null
+  meter_number?: string | null
+  full_name?: string | null
+  address?: string | null
+  phone?: string | null
+  email?: string | null
   bills?: Prisma.billsUncheckedCreateNestedManyWithoutUserInput
   issues?: Prisma.issuesUncheckedCreateNestedManyWithoutUserInput
   meter_readings?: Prisma.meter_readingsUncheckedCreateNestedManyWithoutUserInput
-  purok?: Prisma.puroksUncheckedCreateNestedManyWithoutUsersInput
+  puroks?: Prisma.puroksUncheckedCreateNestedManyWithoutUsersInput
 }
 
 export type usersCreateOrConnectWithoutNotificationsInput = {
@@ -844,11 +1094,17 @@ export type usersUpdateWithoutNotificationsInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   username?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  purok?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  meter_number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  full_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bills?: Prisma.billsUpdateManyWithoutUserNestedInput
   issues?: Prisma.issuesUpdateManyWithoutUserNestedInput
   meter_readings?: Prisma.meter_readingsUpdateManyWithoutUserNestedInput
   role?: Prisma.rolesUpdateOneRequiredWithoutUserNestedInput
-  purok?: Prisma.puroksUpdateManyWithoutUsersNestedInput
+  puroks?: Prisma.puroksUpdateManyWithoutUsersNestedInput
 }
 
 export type usersUncheckedUpdateWithoutNotificationsInput = {
@@ -856,50 +1112,86 @@ export type usersUncheckedUpdateWithoutNotificationsInput = {
   username?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
   role_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  purok?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  meter_number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  full_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bills?: Prisma.billsUncheckedUpdateManyWithoutUserNestedInput
   issues?: Prisma.issuesUncheckedUpdateManyWithoutUserNestedInput
   meter_readings?: Prisma.meter_readingsUncheckedUpdateManyWithoutUserNestedInput
-  purok?: Prisma.puroksUncheckedUpdateManyWithoutUsersNestedInput
+  puroks?: Prisma.puroksUncheckedUpdateManyWithoutUsersNestedInput
 }
 
 export type usersCreateManyRoleInput = {
   id?: bigint | number
   username: string
   password: string
+  purok?: string | null
+  meter_number?: string | null
+  full_name?: string | null
+  address?: string | null
+  phone?: string | null
+  email?: string | null
 }
 
 export type usersUpdateWithoutRoleInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   username?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  purok?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  meter_number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  full_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bills?: Prisma.billsUpdateManyWithoutUserNestedInput
   issues?: Prisma.issuesUpdateManyWithoutUserNestedInput
   meter_readings?: Prisma.meter_readingsUpdateManyWithoutUserNestedInput
   notifications?: Prisma.notificationsUpdateManyWithoutUserNestedInput
-  purok?: Prisma.puroksUpdateManyWithoutUsersNestedInput
+  puroks?: Prisma.puroksUpdateManyWithoutUsersNestedInput
 }
 
 export type usersUncheckedUpdateWithoutRoleInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   username?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  purok?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  meter_number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  full_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bills?: Prisma.billsUncheckedUpdateManyWithoutUserNestedInput
   issues?: Prisma.issuesUncheckedUpdateManyWithoutUserNestedInput
   meter_readings?: Prisma.meter_readingsUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.notificationsUncheckedUpdateManyWithoutUserNestedInput
-  purok?: Prisma.puroksUncheckedUpdateManyWithoutUsersNestedInput
+  puroks?: Prisma.puroksUncheckedUpdateManyWithoutUsersNestedInput
 }
 
 export type usersUncheckedUpdateManyWithoutRoleInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   username?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  purok?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  meter_number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  full_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
-export type usersUpdateWithoutPurokInput = {
+export type usersUpdateWithoutPuroksInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   username?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  purok?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  meter_number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  full_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bills?: Prisma.billsUpdateManyWithoutUserNestedInput
   issues?: Prisma.issuesUpdateManyWithoutUserNestedInput
   meter_readings?: Prisma.meter_readingsUpdateManyWithoutUserNestedInput
@@ -907,22 +1199,34 @@ export type usersUpdateWithoutPurokInput = {
   role?: Prisma.rolesUpdateOneRequiredWithoutUserNestedInput
 }
 
-export type usersUncheckedUpdateWithoutPurokInput = {
+export type usersUncheckedUpdateWithoutPuroksInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   username?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
   role_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  purok?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  meter_number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  full_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bills?: Prisma.billsUncheckedUpdateManyWithoutUserNestedInput
   issues?: Prisma.issuesUncheckedUpdateManyWithoutUserNestedInput
   meter_readings?: Prisma.meter_readingsUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.notificationsUncheckedUpdateManyWithoutUserNestedInput
 }
 
-export type usersUncheckedUpdateManyWithoutPurokInput = {
+export type usersUncheckedUpdateManyWithoutPuroksInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   username?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
   role_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  purok?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  meter_number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  full_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 
@@ -935,7 +1239,7 @@ export type UsersCountOutputType = {
   issues: number
   meter_readings: number
   notifications: number
-  purok: number
+  puroks: number
 }
 
 export type UsersCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -943,7 +1247,7 @@ export type UsersCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.
   issues?: boolean | UsersCountOutputTypeCountIssuesArgs
   meter_readings?: boolean | UsersCountOutputTypeCountMeter_readingsArgs
   notifications?: boolean | UsersCountOutputTypeCountNotificationsArgs
-  purok?: boolean | UsersCountOutputTypeCountPurokArgs
+  puroks?: boolean | UsersCountOutputTypeCountPuroksArgs
 }
 
 /**
@@ -987,7 +1291,7 @@ export type UsersCountOutputTypeCountNotificationsArgs<ExtArgs extends runtime.T
 /**
  * UsersCountOutputType without action
  */
-export type UsersCountOutputTypeCountPurokArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type UsersCountOutputTypeCountPuroksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.puroksWhereInput
 }
 
@@ -997,12 +1301,18 @@ export type usersSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   username?: boolean
   password?: boolean
   role_id?: boolean
+  purok?: boolean
+  meter_number?: boolean
+  full_name?: boolean
+  address?: boolean
+  phone?: boolean
+  email?: boolean
   bills?: boolean | Prisma.users$billsArgs<ExtArgs>
   issues?: boolean | Prisma.users$issuesArgs<ExtArgs>
   meter_readings?: boolean | Prisma.users$meter_readingsArgs<ExtArgs>
   notifications?: boolean | Prisma.users$notificationsArgs<ExtArgs>
   role?: boolean | Prisma.rolesDefaultArgs<ExtArgs>
-  purok?: boolean | Prisma.users$purokArgs<ExtArgs>
+  puroks?: boolean | Prisma.users$puroksArgs<ExtArgs>
   _count?: boolean | Prisma.UsersCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["users"]>
 
@@ -1011,6 +1321,12 @@ export type usersSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   username?: boolean
   password?: boolean
   role_id?: boolean
+  purok?: boolean
+  meter_number?: boolean
+  full_name?: boolean
+  address?: boolean
+  phone?: boolean
+  email?: boolean
   role?: boolean | Prisma.rolesDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["users"]>
 
@@ -1019,6 +1335,12 @@ export type usersSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   username?: boolean
   password?: boolean
   role_id?: boolean
+  purok?: boolean
+  meter_number?: boolean
+  full_name?: boolean
+  address?: boolean
+  phone?: boolean
+  email?: boolean
   role?: boolean | Prisma.rolesDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["users"]>
 
@@ -1027,16 +1349,22 @@ export type usersSelectScalar = {
   username?: boolean
   password?: boolean
   role_id?: boolean
+  purok?: boolean
+  meter_number?: boolean
+  full_name?: boolean
+  address?: boolean
+  phone?: boolean
+  email?: boolean
 }
 
-export type usersOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "username" | "password" | "role_id", ExtArgs["result"]["users"]>
+export type usersOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "username" | "password" | "role_id" | "purok" | "meter_number" | "full_name" | "address" | "phone" | "email", ExtArgs["result"]["users"]>
 export type usersInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   bills?: boolean | Prisma.users$billsArgs<ExtArgs>
   issues?: boolean | Prisma.users$issuesArgs<ExtArgs>
   meter_readings?: boolean | Prisma.users$meter_readingsArgs<ExtArgs>
   notifications?: boolean | Prisma.users$notificationsArgs<ExtArgs>
   role?: boolean | Prisma.rolesDefaultArgs<ExtArgs>
-  purok?: boolean | Prisma.users$purokArgs<ExtArgs>
+  puroks?: boolean | Prisma.users$puroksArgs<ExtArgs>
   _count?: boolean | Prisma.UsersCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type usersIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1054,13 +1382,19 @@ export type $usersPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     meter_readings: Prisma.$meter_readingsPayload<ExtArgs>[]
     notifications: Prisma.$notificationsPayload<ExtArgs>[]
     role: Prisma.$rolesPayload<ExtArgs>
-    purok: Prisma.$puroksPayload<ExtArgs>[]
+    puroks: Prisma.$puroksPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: bigint
     username: string
     password: string
     role_id: bigint
+    purok: string | null
+    meter_number: string | null
+    full_name: string | null
+    address: string | null
+    phone: string | null
+    email: string | null
   }, ExtArgs["result"]["users"]>
   composites: {}
 }
@@ -1460,7 +1794,7 @@ export interface Prisma__usersClient<T, Null = never, ExtArgs extends runtime.Ty
   meter_readings<T extends Prisma.users$meter_readingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.users$meter_readingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$meter_readingsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   notifications<T extends Prisma.users$notificationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.users$notificationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$notificationsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   role<T extends Prisma.rolesDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.rolesDefaultArgs<ExtArgs>>): Prisma.Prisma__rolesClient<runtime.Types.Result.GetResult<Prisma.$rolesPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  purok<T extends Prisma.users$purokArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.users$purokArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$puroksPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  puroks<T extends Prisma.users$puroksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.users$puroksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$puroksPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1494,6 +1828,12 @@ export interface usersFieldRefs {
   readonly username: Prisma.FieldRef<"users", 'String'>
   readonly password: Prisma.FieldRef<"users", 'String'>
   readonly role_id: Prisma.FieldRef<"users", 'BigInt'>
+  readonly purok: Prisma.FieldRef<"users", 'String'>
+  readonly meter_number: Prisma.FieldRef<"users", 'String'>
+  readonly full_name: Prisma.FieldRef<"users", 'String'>
+  readonly address: Prisma.FieldRef<"users", 'String'>
+  readonly phone: Prisma.FieldRef<"users", 'String'>
+  readonly email: Prisma.FieldRef<"users", 'String'>
 }
     
 
@@ -1986,9 +2326,9 @@ export type users$notificationsArgs<ExtArgs extends runtime.Types.Extensions.Int
 }
 
 /**
- * users.purok
+ * users.puroks
  */
-export type users$purokArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type users$puroksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
    * Select specific fields to fetch from the puroks
    */

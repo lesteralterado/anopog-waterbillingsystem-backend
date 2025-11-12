@@ -231,25 +231,25 @@ export type puroksScalarWhereWithAggregatesInput = {
 export type puroksCreateInput = {
   id?: bigint | number
   name: string
-  users?: Prisma.usersCreateNestedManyWithoutPurokInput
+  users?: Prisma.usersCreateNestedManyWithoutPuroksInput
 }
 
 export type puroksUncheckedCreateInput = {
   id?: bigint | number
   name: string
-  users?: Prisma.usersUncheckedCreateNestedManyWithoutPurokInput
+  users?: Prisma.usersUncheckedCreateNestedManyWithoutPuroksInput
 }
 
 export type puroksUpdateInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  users?: Prisma.usersUpdateManyWithoutPurokNestedInput
+  users?: Prisma.usersUpdateManyWithoutPuroksNestedInput
 }
 
 export type puroksUncheckedUpdateInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  users?: Prisma.usersUncheckedUpdateManyWithoutPurokNestedInput
+  users?: Prisma.usersUncheckedUpdateManyWithoutPuroksNestedInput
 }
 
 export type puroksCreateManyInput = {

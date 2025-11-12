@@ -5,7 +5,7 @@ import { prisma } from '../lib/prisma';
 
 export async function createUser(req: Request, res: Response) {
   try {
-    const { username, password, role_id, purok } = req.body;
+  const { username, password, role_id, purok, meter_number, full_name, address, phone, email } = req.body;
 
     // Validate required fields
     if (!username || !password || !role_id) {
@@ -31,12 +31,22 @@ export async function createUser(req: Request, res: Response) {
         password: hashedPassword,
         role_id: BigInt(role_id),
         purok: purok || null,
+        meter_number: meter_number || null,
+        full_name: full_name || null,
+        address: address || null,
+        phone: phone || null,
+        email: email || null,
       },
       select: {
         id: true,
         username: true,
         role_id: true,
         purok: true,
+        meter_number: true,
+        full_name: true,
+        address: true,
+        phone: true,
+        email: true,
       }
     });
 
@@ -65,6 +75,11 @@ export async function getUsers(req: Request, res: Response) {
         username: true,
         role_id: true,
         purok: true,
+        meter_number: true,
+        full_name: true,
+        address: true,
+        phone: true,
+        email: true,
         role: {
           select: {
             name: true
@@ -99,6 +114,11 @@ export async function getUserById(req: Request, res: Response) {
         username: true,
         role_id: true,
         purok: true,
+        meter_number: true,
+        full_name: true,
+        address: true,
+        phone: true,
+        email: true,
         role: {
           select: {
             name: true
@@ -128,13 +148,18 @@ export async function getUserById(req: Request, res: Response) {
 export async function updateUser(req: Request, res: Response) {
   try {
     const { id } = req.params;
-    const { username, password, role_id, purok } = req.body;
+  const { username, password, role_id, purok, meter_number, full_name, address, phone, email } = req.body;
 
-    const updateData: any = {};
+  const updateData: any = {};
 
-    if (username) updateData.username = username;
-    if (role_id) updateData.role_id = BigInt(role_id);
-    if (purok !== undefined) updateData.purok = purok;
+  if (username) updateData.username = username;
+  if (role_id) updateData.role_id = BigInt(role_id);
+  if (purok !== undefined) updateData.purok = purok;
+  if (meter_number !== undefined) updateData.meter_number = meter_number;
+  if (full_name !== undefined) updateData.full_name = full_name;
+  if (address !== undefined) updateData.address = address;
+  if (phone !== undefined) updateData.phone = phone;
+  if (email !== undefined) updateData.email = email;
 
     // Hash password if provided
     if (password) {
@@ -149,6 +174,11 @@ export async function updateUser(req: Request, res: Response) {
         username: true,
         role_id: true,
         purok: true,
+        meter_number: true,
+        full_name: true,
+        address: true,
+        phone: true,
+        email: true,
         role: {
           select: {
             name: true
