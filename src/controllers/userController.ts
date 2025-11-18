@@ -30,7 +30,7 @@ export async function createUser(req: Request, res: Response) {
         username,
         password: hashedPassword,
         role_id: BigInt(role_id),
-        purok: purok || null,
+        purok: purok ? purok.toString() : null,
         meter_number: meter_number || null,
         full_name: full_name || null,
         address: address || null,
@@ -154,7 +154,7 @@ export async function updateUser(req: Request, res: Response) {
 
   if (username) updateData.username = username;
   if (role_id) updateData.role_id = BigInt(role_id);
-  if (purok !== undefined) updateData.purok = purok;
+  if (purok !== undefined) updateData.purok = purok ? purok.toString() : null;
   if (meter_number !== undefined) updateData.meter_number = meter_number;
   if (full_name !== undefined) updateData.full_name = full_name;
   if (address !== undefined) updateData.address = address;
