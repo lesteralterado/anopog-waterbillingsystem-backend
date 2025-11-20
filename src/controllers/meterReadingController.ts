@@ -1,5 +1,6 @@
 import { sendSMS } from "../services/semaphoreService";
 import { prisma } from "../lib/prisma";
+import { serializeBigInt } from "../utils/types";
 
 export async function createMeterReading(req: { body: { userId: any; readingValue: any; imageUrl: any; }; }, res: { json: (arg0: { success: boolean; newReading: any; }) => any; status: (arg0: number) => { (): any; new(): any; json: { (arg0: { error: string; }): void; new(): any; }; }; }) {
   try {
@@ -20,7 +21,7 @@ export async function createMeterReading(req: { body: { userId: any; readingValu
     //   await sendSMS(user.phone_number, message);
     // }
 
-    return res.json({ success: true, newReading });
+    return res.json({ success: true, newReading: serializeBigInt(newReading) });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to create meter reading" });
