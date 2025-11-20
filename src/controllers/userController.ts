@@ -90,7 +90,7 @@ export async function getUsers(req: Request, res: Response) {
     });
 
     // Convert BigInt fields to strings for JSON serialization
-    const serializedUsers = users.map(user => ({
+    const serializedUsers = users.map((user: typeof users[number]) => ({
       ...user,
       id: user.id.toString(),
       role_id: user.role_id.toString()
