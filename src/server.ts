@@ -312,7 +312,7 @@ app.post("/api/meter-reading", upload.single("image"), async (req: Request, res:
     // ✅ Notify admins in real-time
     io.emit("newMeterReading", {
       message: `New meter reading from user ID: ${user_id}`,
-      data: newReading,
+      data: serializeBigInt(newReading),
     });
 
     // ✅ Store notification in DB
@@ -348,7 +348,7 @@ app.post("/api/bills", async (req: Request, res: Response) => {
     // ✅ Notify admin + user in real-time
     io.emit("newBill", {
       message: `New bill generated for user ID: ${user_id}`,
-      data: newBill,
+      data: serializeBigInt(newBill),
     });
 
     // Save notification in DB
@@ -435,7 +435,7 @@ app.post("/api/payments", async (req: Request, res: Response) => {
     // Emit real-time event to admins
     io.emit("newPayment", {
       message: `Payment received for bill ID: ${bill_id}`,
-      data: newPayment,
+      data: serializeBigInt(newPayment),
     });
 
     // Save notification for the user tied to the bill (if we can find it)
