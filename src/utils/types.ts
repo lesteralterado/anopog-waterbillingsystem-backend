@@ -1,10 +1,15 @@
-// Utility function to serialize objects containing BigInt values
+// Utility function to serialize objects containing BigInt and Decimal values
 export function serializeBigInt(obj: any): any {
   if (obj === null || obj === undefined) {
     return obj;
   }
 
   if (typeof obj === 'bigint') {
+    return obj.toString();
+  }
+
+  // Handle Prisma Decimal type
+  if (typeof obj === 'object' && obj !== null && obj.constructor && obj.constructor.name === 'Decimal') {
     return obj.toString();
   }
 
