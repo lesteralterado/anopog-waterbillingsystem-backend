@@ -267,8 +267,16 @@ export async function loginUser(req: Request, res: Response) {
       user: {
         id: user.id.toString(),
         username: user.username,
-        role: user.role.name,
-        // purok: ,
+        role_id: user.role_id.toString(),
+        purok: user.purok,
+        meter_number: user.meter_number,
+        full_name: user.full_name,
+        address: user.address,
+        phone: user.phone,
+        email: user.email,
+        role: {
+          name: user.role.name
+        }
       }
     });
   } catch (error: any) {
