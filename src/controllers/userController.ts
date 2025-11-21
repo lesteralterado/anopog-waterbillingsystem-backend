@@ -238,8 +238,6 @@ export async function loginUser(req: Request, res: Response) {
       }
     });
 
-    const allUsers = await prisma.users.findMany()
-
     if (!user) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
@@ -253,7 +251,7 @@ export async function loginUser(req: Request, res: Response) {
     // Generate JWT token
     const token = jwt.sign(
       {
-        userId: user.id,
+        userId: user.id.toString(),
         username: user.username,
         role: user.role.name
       },
