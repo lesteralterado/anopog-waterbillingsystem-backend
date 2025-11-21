@@ -25,6 +25,7 @@ import { sendSMSMessage } from './controllers/smsController';
 import { createPayment } from './services/paymentsService';
 import uploadRoute from './routes/upload.route';
 import readingRoute from "./routes/reading.route";
+import { serializeBigInt } from './utils/types';
 
 const app = express();
 const server = http.createServer(app);
@@ -323,7 +324,7 @@ app.post("/api/meter-reading", upload.single("image"), async (req: Request, res:
       },
     });
 
-    res.status(201).json({ success: true, newReading });
+    res.status(201).json({ success: true, newReading: serializeBigInt(newReading) });
   } catch (error: any) {
     console.error("Meter Reading Error:", error);
     res.status(500).json({ error: error.message });

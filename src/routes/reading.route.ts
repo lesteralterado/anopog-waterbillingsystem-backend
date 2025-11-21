@@ -2,6 +2,7 @@ import express from "express";
 import multer from "multer";
 import prisma from "../config/prisma";
 import cloudinary from "../config/cloudinary";
+import { serializeBigInt } from "../utils/types";
 
 const router = express.Router();
 const upload = multer({ storage: multer.memoryStorage() });
@@ -43,7 +44,7 @@ router.post("/", upload.single("photo"), async (req, res) => {
 
     res.status(201).json({
       message: "Meter reading saved successfully!",
-      data: newReading,
+      data: serializeBigInt(newReading),
     });
   } catch (error: any) {
     console.error("❌ Error saving reading:", error.message);
