@@ -331,6 +331,40 @@ app.post("/api/meter-reading", upload.single("image"), async (req: Request, res:
   }
 });
 
+// Route: Get all meter readings with related data
+app.get("/api/meter-readings", async (req: Request, res: Response) => {
+  try {
+    const meterReadings = await prisma.meter_readings.findMany({
+      include: {
+        user: {
+          select: {
+            id: true,
+            username: true,
+            full_name: true,
+            address: true,
+          },
+        },
+        bills: {
+          select: {
+            id: true,
+            amount_due: true,
+            due_date: true,
+            is_paid: true,
+          },
+        },
+      },
+      orderBy: {
+        reading_date: 'desc',
+      },
+    });
+
+    res.status(200).json({ success: true, meterReadings: serializeBigInt(meterReadings) });
+  } catch (error: any) {
+    console.error("Get Meter Readings Error:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Route: Create new bill (admin or automated)
 app.post("/api/bills", async (req: Request, res: Response) => {
   try {
