@@ -282,3 +282,58 @@ export async function loginUser(req: Request, res: Response) {
     res.status(500).json({ error: error.message });
   }
 }
+
+export async function getConsumersByPurok(req: Request, res: Response) {
+  try {
+    const users = await prisma.users.findMany({
+      where: {
+        purok: {
+          not: null
+        }
+      },
+      select: {
+        id: true,
+        username: true,
+        role_id: true,
+        purok: true,
+        meter_number: true,
+        full_name: true,
+        address: true,
+        phone: true,
+        email: true,
+        role: {
+          select: {
+            name: true
+          }
+        }
+      },
+      orderBy: { username: 'asc' }
+    });
+
+    // Group users by purok
+    const purokMap = new Map<string, typeof users>();
+
+    users.forEach(user => {
+      const purok = user.purok!;
+      if (!purokMap.has(purok)) {
+        purokMap.set(purok, []);
+      }
+      purokMap.get(purok)!.push(user);
+    });
+
+    // Convert to array of objects
+    const consumersByPurok = Array.from(purokMap.entries()).map(([purok, consumers]) => ({
+      purok,
+      consumers: consumers.map(user => ({
+        ...user,
+        id: user.id.toString(),
+        role_id: user.role_id.toString()
+      }))
+    }));
+
+    res.json(consumersByPurok);
+  } catch (error: any) {
+    console.error("Get Consumers By Purok Error:", error);
+    res.status(500).json({ error: error.message });
+  }
+}

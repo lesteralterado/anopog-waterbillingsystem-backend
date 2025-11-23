@@ -19,7 +19,8 @@ import {
   getUserById,
   updateUser,
   deleteUser,
-  loginUser
+  loginUser,
+  getConsumersByPurok
 } from './controllers/userController';
 import { sendSMSMessage } from './controllers/smsController';
 import { createPayment } from './services/paymentsService';
@@ -450,6 +451,7 @@ app.get("/api/users/:id", getUserById);
 app.put("/api/users/:id", updateUser);
 app.delete("/api/users/:id", deleteUser);
 app.post("/api/login", loginUser);
+app.get("/api/consumers-by-purok", getConsumersByPurok);
 
 // SMS Routes
 app.post("/api/send-sms", sendSMSMessage);
