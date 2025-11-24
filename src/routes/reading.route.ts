@@ -42,52 +42,26 @@ router.post("/", upload.single("photo"), async (req, res) => {
       },
     });
 
+    // Create bill for the meter reading
+    const amountDue = parseFloat(reading_value) * 10; // Fixed rate of 10 PHP per cubic meter
+    const dueDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days from now
+
+    const newBill = await prisma.bills.create({
+      data: {
+        user_id: BigInt(consumer_id),
+        meter_reading_id: newReading.id,
+        amount_due: amountDue,
+        due_date: dueDate,
+      },
+    });
+
     res.status(201).json({
       message: "Meter reading saved successfully!",
       data: serializeBigInt(newReading),
+      bill: serializeBigInt(newBill),
     });
   } catch (error: any) {
     console.error("❌ Error saving reading:", error.message);
-    res.status(500).json({ error: "Server error", details: error.message });
-  }
-});
-
-// POST /api/readings/sync - Bulk sync meter readings
-router.post("/sync", async (req, res) => {
-  try {
-    const { readings } = req.body;
-
-    if (!readings || !Array.isArray(readings) || readings.length === 0) {
-      return res.status(400).json({ error: "Missing or invalid readings array" });
-    }
-
-    // Validate each reading
-    for (const reading of readings) {
-      if (!reading.consumer_id || !reading.reading_value) {
-        return res.status(400).json({ error: "Each reading must have consumer_id and reading_value" });
-      }
-    }
-
-    // Create readings in transaction
-    const createdReadings = await prisma.$transaction(
-      readings.map(reading =>
-        prisma.meter_readings.create({
-          data: {
-            user_id: BigInt(reading.consumer_id),
-            reading_date: new Date(),
-            reading_value: parseFloat(reading.reading_value),
-            image_url: null, // No photos for bulk sync
-          },
-        })
-      )
-    );
-
-    res.status(201).json({
-      message: `${createdReadings.length} meter readings synced successfully!`,
-      data: createdReadings.map(reading => serializeBigInt(reading)),
-    });
-  } catch (error: any) {
-    console.error("❌ Error syncing readings:", error.message);
     res.status(500).json({ error: "Server error", details: error.message });
   }
 });

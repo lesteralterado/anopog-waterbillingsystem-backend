@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { prisma } from '../lib/prisma';
+import { emitToClients } from '../services/socketService';
 
 export async function createUser(req: Request, res: Response) {
   try {
@@ -56,6 +57,12 @@ export async function createUser(req: Request, res: Response) {
       id: newUser.id.toString(),
       role_id: newUser.role_id.toString()
     };
+
+    // Emit new customer event to connected clients (e.g., Flutter meter-reader app)
+    emitToClients('newCustomer', {
+      message: 'New customer added',
+      data: serializedUser
+    });
 
     // Optional: Send welcome SMS if phone number is provided in future
     // This can be extended when phone_number field is added to users table

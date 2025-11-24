@@ -27,6 +27,7 @@ import { createPayment } from './services/paymentsService';
 import uploadRoute from './routes/upload.route';
 import readingRoute from "./routes/reading.route";
 import { serializeBigInt } from './utils/types';
+import { setIo } from './services/socketService';
 
 const app = express();
 const server = http.createServer(app);
@@ -37,6 +38,8 @@ const io = new Server(server, {
     methods: ["GET", "POST", "PUT", "DELETE"],
   },
 });
+
+setIo(io);
 
 // Interface for payment intent request body
 interface CreatePaymentIntentBody {
