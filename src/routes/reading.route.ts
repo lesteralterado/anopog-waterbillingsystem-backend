@@ -3,6 +3,7 @@ import multer from "multer";
 import prisma from "../config/prisma";
 import cloudinary from "../config/cloudinary";
 import { serializeBigInt } from "../utils/types";
+import { emitToClients } from "../services/socketService";
 
 const router = express.Router();
 const upload = multer({ storage: multer.memoryStorage() });
@@ -42,8 +43,17 @@ router.post("/", upload.single("photo"), async (req, res) => {
       },
     });
 
-    // Create bill for the meter reading
-    const amountDue = parseFloat(reading_value) * 10; // Fixed rate of 10 PHP per cubic meter
+    // Get previous reading for consumption calculation
+    const previousReading = await prisma.meter_readings.findFirst({
+      where: { user_id: BigInt(consumer_id) },
+      orderBy: { reading_date: 'desc' },
+      skip: 1, // Skip the latest (current) to get previous
+    });
+
+    const currentValue = parseFloat(reading_value);
+    const previousValue = previousReading ? parseFloat(previousReading.reading_value.toString()) : 0;
+    const consumption = currentValue - previousValue;
+    const amountDue = consumption * 10; // Fixed rate of 10 PHP per cubic meter
     const dueDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days from now
 
     const newBill = await prisma.bills.create({
@@ -53,6 +63,23 @@ router.post("/", upload.single("photo"), async (req, res) => {
         amount_due: amountDue,
         due_date: dueDate,
       },
+    });
+
+    // Store notification in DB
+    await prisma.notifications.create({
+      data: {
+        user_id: BigInt(consumer_id),
+        message: `Your bill has been calculated. Amount due: ₱${amountDue.toFixed(2)}`,
+        notification_date: new Date(),
+      },
+    });
+
+    // Send calculation data to Consumer via socket
+    emitToClients("billCalculated", {
+      user_id: consumer_id,
+      bill: serializeBigInt(newBill),
+      consumption: consumption,
+      amountDue: amountDue,
     });
 
     res.status(201).json({
