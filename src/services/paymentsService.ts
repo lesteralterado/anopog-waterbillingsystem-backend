@@ -34,7 +34,7 @@ export async function createPayment(input: CreatePaymentInput) {
       payment_method,
       amount_paid: parseFloat(amount_paid as any),
       fee: calculatedFee,
-    },
+    } as any,
   });
 
   return newPayment;
