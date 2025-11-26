@@ -1,5 +1,5 @@
 import { sendSMS } from "../services/semaphoreService";
-import { prisma } from "../lib/prisma";
+import prisma from "../lib/prisma";
 import { serializeBigInt } from "../utils/types";
 
 export async function createMeterReading(req: { body: { userId: any; readingValue: any; imageUrl: any; }; }, res: { json: (arg0: { success: boolean; newReading: any; }) => any; status: (arg0: number) => { (): any; new(): any; json: { (arg0: { error: string; }): void; new(): any; }; }; }) {

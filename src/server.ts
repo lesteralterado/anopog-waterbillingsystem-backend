@@ -12,7 +12,7 @@ dotenv.config();
 
 import cloudinary from './config/cloudinary';
 
-import { prisma } from './lib/prisma';
+import prisma from './lib/prisma';
 import {
   createUser,
   getUsers,

@@ -1,4 +1,4 @@
-import { prisma } from '../lib/prisma';
+import prisma from '../lib/prisma';
 
 type CreatePaymentInput = {
   bill_id: string | number;
