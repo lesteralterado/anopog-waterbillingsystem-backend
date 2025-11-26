@@ -374,6 +374,11 @@ app.post("/api/bills", async (req: Request, res: Response) => {
   try {
     const billData = req.body;
 
+    // Validate required fields
+    if (!billData.userId || !billData.meterReadingId || !billData.amountDue || !billData.dueDate || billData.isPaid === undefined) {
+      return res.status(400).json({ message: "Missing required fields: userId, meterReadingId, amountDue, dueDate, isPaid" });
+    }
+
     // Build data object conditionally for optional fields
     const data: any = {
       receipt_number: billData.receiptNumber,
@@ -397,12 +402,11 @@ app.post("/api/bills", async (req: Request, res: Response) => {
       homeowner_phone: billData.homeownerPhone,
       homeowner_email: billData.homeownerEmail,
       status: billData.status || "unpaid",
-      amount_due: billData.totalAmount ? parseFloat(billData.totalAmount) : undefined, // For compatibility
+      amount_due: billData.amountDue ? parseFloat(billData.amountDue) : undefined,
+      user_id: BigInt(billData.userId),
+      meter_reading_id: BigInt(billData.meterReadingId),
+      is_paid: billData.isPaid,
     };
-
-    if (billData.userId) {
-      data.user_id = BigInt(billData.userId);
-    }
 
     const newBill = await prisma.bills.create({
       data,
