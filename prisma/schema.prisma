@@ -52,15 +52,36 @@ model meter_readings {
 }
 
 model bills {
-  id               BigInt         @id @default(autoincrement())
-  user_id          BigInt
-  meter_reading_id BigInt
-  amount_due       Decimal        @db.Decimal
-  due_date         DateTime       @db.Date
-  is_paid          Boolean?       @default(false)
-  meter_reading    meter_readings @relation(fields: [meter_reading_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  user             users          @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  payments         payments[]
+  id                     BigInt         @id @default(autoincrement())
+  user_id                BigInt?
+  meter_reading_id       BigInt?
+  amount_due             Decimal?       @db.Decimal
+  due_date               DateTime?      @db.Date
+  is_paid                Boolean?       @default(false)
+  // Additional detailed bill fields
+  receipt_number         String?
+  issue_date             DateTime?
+  barangay_name          String?
+  homeowner_name         String?
+  address                String?
+  meter_number           String?
+  purok                  String?
+  billing_period         String?
+  previous_reading       Decimal?       @db.Decimal
+  current_reading        Decimal?       @db.Decimal
+  consumption            Decimal?       @db.Decimal
+  rate_per_cubic_meter   Decimal?       @db.Decimal
+  basic_charge           Decimal?       @db.Decimal
+  penalties              Decimal?       @db.Decimal
+  total_amount           Decimal?       @db.Decimal
+  payment_terms          String?
+  qr_code                String?
+  homeowner_phone        String?
+  homeowner_email        String?
+  status                 String?        @default("unpaid")
+  meter_reading          meter_readings? @relation(fields: [meter_reading_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user                   users?         @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  payments               payments[]
 }
 
 model payments {
@@ -69,6 +90,7 @@ model payments {
   payment_date   DateTime @db.Date
   payment_method String
   amount_paid    Decimal  @db.Decimal
+  fee            Decimal? @db.Decimal @default(0)
   bill           bills    @relation(fields: [bill_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 

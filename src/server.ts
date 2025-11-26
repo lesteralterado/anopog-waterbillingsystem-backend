@@ -369,38 +369,137 @@ app.get("/api/meter-readings", async (req: Request, res: Response) => {
   }
 });
 
-// Route: Create new bill (admin or automated)
+// Route: Create new bill (from Meter Reader)
 app.post("/api/bills", async (req: Request, res: Response) => {
   try {
-    const { user_id, meter_reading_id, amount_due, due_date } = req.body;
+    const billData = req.body;
+
+    // Build data object conditionally for optional fields
+    const data: any = {
+      receipt_number: billData.receiptNumber,
+      issue_date: billData.issueDate ? new Date(billData.issueDate) : undefined,
+      barangay_name: billData.barangayName,
+      homeowner_name: billData.homeownerName,
+      address: billData.address,
+      meter_number: billData.meterNumber,
+      purok: billData.purok,
+      billing_period: billData.billingPeriod,
+      previous_reading: billData.previousReading ? parseFloat(billData.previousReading) : undefined,
+      current_reading: billData.currentReading ? parseFloat(billData.currentReading) : undefined,
+      consumption: billData.consumption ? parseFloat(billData.consumption) : undefined,
+      rate_per_cubic_meter: billData.ratePerCubicMeter ? parseFloat(billData.ratePerCubicMeter) : undefined,
+      basic_charge: billData.basicCharge ? parseFloat(billData.basicCharge) : undefined,
+      penalties: billData.penalties ? parseFloat(billData.penalties) : undefined,
+      total_amount: billData.totalAmount ? parseFloat(billData.totalAmount) : undefined,
+      due_date: billData.dueDate ? new Date(billData.dueDate) : undefined,
+      payment_terms: billData.paymentTerms,
+      qr_code: billData.qrCode,
+      homeowner_phone: billData.homeownerPhone,
+      homeowner_email: billData.homeownerEmail,
+      status: billData.status || "unpaid",
+      amount_due: billData.totalAmount ? parseFloat(billData.totalAmount) : undefined, // For compatibility
+    };
+
+    if (billData.userId) {
+      data.user_id = BigInt(billData.userId);
+    }
 
     const newBill = await prisma.bills.create({
-      data: {
-        user_id: BigInt(user_id),
-        meter_reading_id: BigInt(meter_reading_id),
-        amount_due: parseFloat(amount_due),
-        due_date: new Date(due_date),
-      },
+      data,
     });
 
-    // ✅ Notify admin + user in real-time
-    io.emit("newBill", {
-      message: `New bill generated for user ID: ${user_id}`,
+    // ✅ Notify consumer in real-time
+    io.emit("billCreated", {
+      message: `New bill created for user ID: ${billData.userId}`,
       data: serializeBigInt(newBill),
     });
 
     // Save notification in DB
-    await prisma.notifications.create({
-      data: {
-        user_id: BigInt(user_id),
-        message: "A new bill has been generated.",
-        notification_date: new Date(),
-      },
-    });
+    if (billData.userId) {
+      await prisma.notifications.create({
+        data: {
+          user_id: BigInt(billData.userId),
+          message: `Your bill has been created. Total amount: ₱${billData.totalAmount}`,
+          notification_date: new Date(),
+        },
+      });
+    }
 
-    res.status(201).json({ success: true, newBill });
+    res.status(201).json({ success: true, newBill: serializeBigInt(newBill) });
   } catch (error: any) {
     console.error("Bill Creation Error:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Route: Create multiple bills (bulk from Meter Reader)
+app.post("/api/bulk-bills", async (req: Request, res: Response) => {
+  try {
+    const { bills } = req.body;
+
+    if (!Array.isArray(bills)) {
+      return res.status(400).json({ error: "Bills must be an array" });
+    }
+
+    const createdBills = [];
+
+    for (const billData of bills) {
+      const data: any = {
+        receipt_number: billData.receiptNumber,
+        issue_date: billData.issueDate ? new Date(billData.issueDate) : undefined,
+        barangay_name: billData.barangayName,
+        homeowner_name: billData.homeownerName,
+        address: billData.address,
+        meter_number: billData.meterNumber,
+        purok: billData.purok,
+        billing_period: billData.billingPeriod,
+        previous_reading: billData.previousReading ? parseFloat(billData.previousReading) : undefined,
+        current_reading: billData.currentReading ? parseFloat(billData.currentReading) : undefined,
+        consumption: billData.consumption ? parseFloat(billData.consumption) : undefined,
+        rate_per_cubic_meter: billData.ratePerCubicMeter ? parseFloat(billData.ratePerCubicMeter) : undefined,
+        basic_charge: billData.basicCharge ? parseFloat(billData.basicCharge) : undefined,
+        penalties: billData.penalties ? parseFloat(billData.penalties) : undefined,
+        total_amount: billData.totalAmount ? parseFloat(billData.totalAmount) : undefined,
+        due_date: billData.dueDate ? new Date(billData.dueDate) : undefined,
+        payment_terms: billData.paymentTerms,
+        qr_code: billData.qrCode,
+        homeowner_phone: billData.homeownerPhone,
+        homeowner_email: billData.homeownerEmail,
+        status: billData.status || "unpaid",
+        amount_due: billData.totalAmount ? parseFloat(billData.totalAmount) : undefined,
+      };
+
+      if (billData.userId) {
+        data.user_id = BigInt(billData.userId);
+      }
+
+      const newBill = await prisma.bills.create({
+        data,
+      });
+
+      createdBills.push(newBill);
+
+      // Notify consumer
+      io.emit("billCreated", {
+        message: `New bill created for user ID: ${billData.userId}`,
+        data: serializeBigInt(newBill),
+      });
+
+      // Save notification
+      if (billData.userId) {
+        await prisma.notifications.create({
+          data: {
+            user_id: BigInt(billData.userId),
+            message: `Your bill has been created. Total amount: ₱${billData.totalAmount}`,
+            notification_date: new Date(),
+          },
+        });
+      }
+    }
+
+    res.status(201).json({ success: true, createdBills: serializeBigInt(createdBills) });
+  } catch (error: any) {
+    console.error("Bulk Bill Creation Error:", error);
     res.status(500).json({ error: error.message });
   }
 });
@@ -468,7 +567,13 @@ app.post("/api/payments", async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Missing required fields: bill_id, payment_date, payment_method, amount_paid" });
     }
 
-    // Create payment (DB)
+    // Validate payment method
+    const validMethods = ['GCash', 'PayMaya', 'Credit/Debit Card', 'Bank Transfer', 'Over-the-Counter', 'Saved Cards (Visa/Mastercard)'];
+    if (!validMethods.includes(payment_method)) {
+      return res.status(400).json({ message: "Invalid payment method" });
+    }
+
+    // Create payment (DB) - fee is calculated automatically in the service
     const newPayment = await createPayment({ bill_id, payment_date, payment_method, amount_paid });
 
     // Emit real-time event to admins
@@ -483,13 +588,13 @@ app.post("/api/payments", async (req: Request, res: Response) => {
       await prisma.notifications.create({
         data: {
           user_id: billRecord.user_id,
-          message: `Payment received for your bill (${bill_id}).`,
+          message: `Payment received for your bill (${bill_id}). Amount: ₱${amount_paid}, Fee: ₱${(newPayment as any).fee || 0}`,
           notification_date: new Date(),
         },
       });
     }
 
-    res.status(201).json({ success: true, newPayment });
+    res.status(201).json({ success: true, newPayment: serializeBigInt(newPayment) });
   } catch (error: any) {
     console.error("Payment Error:", error);
     res.status(500).json({ error: error.message });
