@@ -509,7 +509,7 @@ app.post("/api/bulk-bills", async (req: Request, res: Response) => {
 });
 
 // Route: Get all bills with related data
-app.get("/api/bills", async (req: Request, res: Response) => {
+app.get("/api/billing", async (req: Request, res: Response) => {
   try {
     const bills = await prisma.bills.findMany({
       orderBy: {
