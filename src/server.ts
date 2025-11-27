@@ -512,28 +512,12 @@ app.post("/api/bulk-bills", async (req: Request, res: Response) => {
 app.get("/api/bills", async (req: Request, res: Response) => {
   try {
     const bills = await prisma.bills.findMany({
-      include: {
-        user: {
-          select: {
-            id: true,
-            username: true,
-          },
-        },
-        meter_reading: {
-          select: {
-            id: true,
-            reading_value: true,
-            reading_date: true,
-            image_url: true,
-          },
-        },
-      },
       orderBy: {
         due_date: 'desc',
       },
     });
 
-    res.status(200).json({ success: true, bills });
+    res.status(200).json({ success: true, bills: serializeBigInt(bills) });
   } catch (error: any) {
     console.error("Get Bills Error:", error);
     res.status(500).json({ error: error.message });
