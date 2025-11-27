@@ -313,6 +313,29 @@ app.post("/api/meter-reading", upload.single("image"), async (req: Request, res:
       },
     });
 
+    // Get previous reading for consumption calculation
+    const previousReading = await prisma.meter_readings.findFirst({
+      where: { user_id: BigInt(user_id) },
+      orderBy: { reading_date: 'desc' },
+      skip: 1, // Skip the latest (current) to get previous
+    });
+
+    const currentValue = parseFloat(reading_value);
+    const previousValue = previousReading ? parseFloat(previousReading.reading_value.toString()) : 0;
+    const consumption = currentValue - previousValue;
+    const amountDue = consumption * 10; // Fixed rate of 10 PHP per cubic meter
+    const dueDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days from now
+
+    const newBill = await prisma.bills.create({
+      data: {
+        user_id: Number(user_id),
+        meter_reading_id: Number(newReading.id),
+        amount_due: amountDue,
+        due_date: dueDate,
+        is_paid: false,
+      },
+    });
+
     // ✅ Notify admins in real-time
     io.emit("newMeterReading", {
       message: `New meter reading from user ID: ${user_id}`,
@@ -323,12 +346,12 @@ app.post("/api/meter-reading", upload.single("image"), async (req: Request, res:
     await prisma.notifications.create({
       data: {
         user_id: BigInt(user_id),
-        message: "New meter reading uploaded.",
+        message: `Your bill has been calculated. Amount due: ₱${amountDue.toFixed(2)}`,
         notification_date: new Date(),
       },
     });
 
-    res.status(201).json({ success: true, newReading: serializeBigInt(newReading) });
+    res.status(201).json({ success: true, newReading: serializeBigInt(newReading), bill: serializeBigInt(newBill) });
   } catch (error: any) {
     console.error("Meter Reading Error:", error);
     res.status(500).json({ error: error.message });
