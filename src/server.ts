@@ -27,7 +27,7 @@ import { createPayment } from './services/paymentsService';
 import uploadRoute from './routes/upload.route';
 import readingRoute from "./routes/reading.route";
 import { serializeBigInt } from './utils/types';
-import { setIo } from './services/socketService';
+import { setIo, emitToClients } from './services/socketService';
 
 const app = express();
 const server = http.createServer(app);
@@ -342,6 +342,14 @@ app.post("/api/meter-reading", upload.single("image"), async (req: Request, res:
       data: serializeBigInt(newReading),
     });
 
+    // Send calculation data to Consumer via socket
+    emitToClients("billCalculated", {
+      user_id: user_id,
+      bill: serializeBigInt(newBill),
+      consumption: consumption,
+      amountDue: amountDue,
+    });
+
     // ✅ Store notification in DB
     await prisma.notifications.create({
       data: {
@@ -351,7 +359,7 @@ app.post("/api/meter-reading", upload.single("image"), async (req: Request, res:
       },
     });
 
-    res.status(201).json({ success: true, newReading: serializeBigInt(newReading), bill: serializeBigInt(newBill) });
+    res.status(201).json({ success: true, newReading: serializeBigInt(newReading), bill: serializeBigInt(newBill), consumption: consumption });
   } catch (error: any) {
     console.error("Meter Reading Error:", error);
     res.status(500).json({ error: error.message });
