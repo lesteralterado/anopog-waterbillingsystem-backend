@@ -58,10 +58,11 @@ router.post("/", upload.single("photo"), async (req, res) => {
 
     const newBill = await prisma.bills.create({
       data: {
-        user_id: BigInt(consumer_id),
-        meter_reading_id: newReading.id,
+        user_id: Number(consumer_id),
+        meter_reading_id: Number(newReading.id),
         amount_due: amountDue,
         due_date: dueDate,
+        is_paid: false,
       },
     });
 

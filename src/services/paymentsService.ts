@@ -29,7 +29,7 @@ export async function createPayment(input: CreatePaymentInput) {
 
   const newPayment = await prisma.payments.create({
     data: {
-      bill_id: BigInt(bill_id),
+      bill_id: Number(bill_id),
       payment_date: new Date(payment_date),
       payment_method,
       amount_paid: parseFloat(amount_paid as any),

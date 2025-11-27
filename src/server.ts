@@ -348,14 +348,6 @@ app.get("/api/meter-readings", async (req: Request, res: Response) => {
             address: true,
           },
         },
-        bills: {
-          select: {
-            id: true,
-            amount_due: true,
-            due_date: true,
-            is_paid: true,
-          },
-        },
       },
       orderBy: {
         reading_date: 'desc',
@@ -379,33 +371,12 @@ app.post("/api/bills", async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Missing required fields: userId, meterReadingId, amountDue, dueDate, isPaid" });
     }
 
-    // Build data object conditionally for optional fields
-    const data: any = {
-      receipt_number: billData.receiptNumber,
-      issue_date: billData.issueDate ? new Date(billData.issueDate) : undefined,
-      barangay_name: billData.barangayName,
-      homeowner_name: billData.homeownerName,
-      address: billData.address,
-      meter_number: billData.meterNumber,
-      purok: billData.purok,
-      billing_period: billData.billingPeriod,
-      previous_reading: billData.previousReading ? parseFloat(billData.previousReading) : undefined,
-      current_reading: billData.currentReading ? parseFloat(billData.currentReading) : undefined,
-      consumption: billData.consumption ? parseFloat(billData.consumption) : undefined,
-      rate_per_cubic_meter: billData.ratePerCubicMeter ? parseFloat(billData.ratePerCubicMeter) : undefined,
-      basic_charge: billData.basicCharge ? parseFloat(billData.basicCharge) : undefined,
-      penalties: billData.penalties ? parseFloat(billData.penalties) : undefined,
-      total_amount: billData.totalAmount ? parseFloat(billData.totalAmount) : undefined,
-      due_date: billData.dueDate ? new Date(billData.dueDate) : undefined,
-      payment_terms: billData.paymentTerms,
-      qr_code: billData.qrCode,
-      homeowner_phone: billData.homeownerPhone,
-      homeowner_email: billData.homeownerEmail,
-      status: billData.status || "unpaid",
-      amount_due: billData.amountDue ? parseFloat(billData.amountDue) : undefined,
-      user_id: BigInt(billData.userId),
-      meter_reading_id: BigInt(billData.meterReadingId),
-      is_paid: billData.isPaid,
+    const data = {
+      user_id: Number(billData.userId),
+      meter_reading_id: Number(billData.meterReadingId),
+      amount_due: parseFloat(billData.amountDue),
+      due_date: new Date(billData.dueDate),
+      is_paid: billData.isPaid || false,
     };
 
     const newBill = await prisma.bills.create({
@@ -422,8 +393,8 @@ app.post("/api/bills", async (req: Request, res: Response) => {
     if (billData.userId) {
       await prisma.notifications.create({
         data: {
-          user_id: BigInt(billData.userId),
-          message: `Your bill has been created. Total amount: ₱${billData.totalAmount}`,
+          user_id: Number(billData.userId),
+          message: `Your bill has been created. Amount due: ₱${billData.amountDue}`,
           notification_date: new Date(),
         },
       });
@@ -448,34 +419,13 @@ app.post("/api/bulk-bills", async (req: Request, res: Response) => {
     const createdBills = [];
 
     for (const billData of bills) {
-      const data: any = {
-        receipt_number: billData.receiptNumber,
-        issue_date: billData.issueDate ? new Date(billData.issueDate) : undefined,
-        barangay_name: billData.barangayName,
-        homeowner_name: billData.homeownerName,
-        address: billData.address,
-        meter_number: billData.meterNumber,
-        purok: billData.purok,
-        billing_period: billData.billingPeriod,
-        previous_reading: billData.previousReading ? parseFloat(billData.previousReading) : undefined,
-        current_reading: billData.currentReading ? parseFloat(billData.currentReading) : undefined,
-        consumption: billData.consumption ? parseFloat(billData.consumption) : undefined,
-        rate_per_cubic_meter: billData.ratePerCubicMeter ? parseFloat(billData.ratePerCubicMeter) : undefined,
-        basic_charge: billData.basicCharge ? parseFloat(billData.basicCharge) : undefined,
-        penalties: billData.penalties ? parseFloat(billData.penalties) : undefined,
-        total_amount: billData.totalAmount ? parseFloat(billData.totalAmount) : undefined,
-        due_date: billData.dueDate ? new Date(billData.dueDate) : undefined,
-        payment_terms: billData.paymentTerms,
-        qr_code: billData.qrCode,
-        homeowner_phone: billData.homeownerPhone,
-        homeowner_email: billData.homeownerEmail,
-        status: billData.status || "unpaid",
-        amount_due: billData.totalAmount ? parseFloat(billData.totalAmount) : undefined,
+      const data = {
+        user_id: Number(billData.userId),
+        meter_reading_id: Number(billData.meterReadingId),
+        amount_due: parseFloat(billData.amountDue),
+        due_date: new Date(billData.dueDate),
+        is_paid: billData.isPaid || false,
       };
-
-      if (billData.userId) {
-        data.user_id = BigInt(billData.userId);
-      }
 
       const newBill = await prisma.bills.create({
         data,
@@ -493,8 +443,8 @@ app.post("/api/bulk-bills", async (req: Request, res: Response) => {
       if (billData.userId) {
         await prisma.notifications.create({
           data: {
-            user_id: BigInt(billData.userId),
-            message: `Your bill has been created. Total amount: ₱${billData.totalAmount}`,
+            user_id: Number(billData.userId),
+            message: `Your bill has been created. Amount due: ₱${billData.amountDue}`,
             notification_date: new Date(),
           },
         });
@@ -571,7 +521,7 @@ app.post("/api/payments", async (req: Request, res: Response) => {
     });
 
     // Save notification for the user tied to the bill (if we can find it)
-    const billRecord = await prisma.bills.findUnique({ where: { id: BigInt(bill_id) } });
+    const billRecord = await prisma.bills.findUnique({ where: { id: Number(bill_id) } });
     if (billRecord && billRecord.user_id) {
       await prisma.notifications.create({
         data: {

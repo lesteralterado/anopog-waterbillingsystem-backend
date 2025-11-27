@@ -35,29 +35,11 @@ export async function createMeterReading(req: { body: { userId: any; readingValu
 
     const newBill = await prisma.bills.create({
       data: {
-        user_id: userId,
-        meter_reading_id: newReading.id,
+        user_id: Number(userId),
+        meter_reading_id: Number(newReading.id),
         amount_due: totalAmount,
         due_date: dueDate,
-        is_paid: false,
-        issue_date: new Date(),
-        barangay_name: 'Anopog', // Example
-        homeowner_name: user?.full_name || '',
-        address: user?.address || '',
-        meter_number: user?.meter_number || '',
-        purok: user?.purok || '',
-        billing_period: `${previousReading?.reading_date?.toISOString().split('T')[0] || 'N/A'} to ${newReading.reading_date.toISOString().split('T')[0]}`,
-        previous_reading: previousValue,
-        current_reading: readingValue,
-        consumption: consumption,
-        rate_per_cubic_meter: ratePerCubicMeter,
-        basic_charge: basicCharge,
-        penalties: penalties,
-        total_amount: totalAmount,
-        payment_terms: 'Due within 15 days',
-        homeowner_phone: user?.phone || '',
-        homeowner_email: user?.email || '',
-        status: 'unpaid'
+        is_paid: false
       }
     });
 
