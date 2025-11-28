@@ -23,7 +23,7 @@ import {
   getConsumersByPurok
 } from './controllers/userController';
 import { sendSMSMessage } from './controllers/smsController';
-import { createPayment } from './services/paymentsService';
+import { createPayment, getPaymentFee } from './services/paymentsService';
 import uploadRoute from './routes/upload.route';
 import readingRoute from "./routes/reading.route";
 import { serializeBigInt } from './utils/types';
@@ -125,8 +125,8 @@ app.post('/api/create-payment-intent', async (req: Request<{}, {}, CreatePayment
   try {
     const { 
       amount, 
-      paymentMethods = ['card', 'gcash', 'paymaya', 'grab_pay', 'shopee_pay'],
-      description = 'Payment description'
+      paymentMethods = ['gcash', 'paymaya'],
+      description = 'Anopog Water Billing System'
     } = req.body;
 
     // Validate amount
@@ -137,21 +137,22 @@ app.post('/api/create-payment-intent', async (req: Request<{}, {}, CreatePayment
       });
     }
 
-     // Create payment intent using PayMongo REST API
-     const response = await paymongoAPI.post('/payment_intents', {
-       data: {
-         attributes: {
-           amount: Math.round(amount * 100), // Convert to centavos (e.g., 20.00 -> 2000)
-           payment_method_allowed: paymentMethods,
-           payment_method_options: {
-             card: { request_three_d_secure: 'any' }
-           },
-           currency: 'PHP',
-           capture_type: 'automatic',
-           statement_descriptor: description
-         }
-       }
-     });
+    // Create payment intent using PayMongo REST API
+    const response = await paymongoAPI.post('/payment_intents', {
+      data: {
+        attributes: {
+          amount: Math.round(amount * 100), // Convert to centavos (e.g., 20.00 -> 2000)
+          payment_method_allowed: paymentMethods,
+          payment_method_options: {
+            card: { request_three_d_secure: 'any' }
+          },
+          currency: 'PHP',
+          capture_type: 'automatic',
+          description: description,
+          statement_descriptor: 'Anopog'
+        }
+      }
+    });
 
     // Return success response
     res.status(200).json({
@@ -182,7 +183,7 @@ app.post('/api/create-payment-intent', async (req: Request<{}, {}, CreatePayment
 // Route to attach payment method to payment intent
 app.post('/api/attach-payment-method', async (req: Request, res: Response) => {
   try {
-    const { paymentIntentId, paymentMethodId, clientKey } = req.body;
+    const { paymentIntentId, paymentMethodId, clientKey, billId, amount, paymentMethod } = req.body;
 
     if (!paymentIntentId || !paymentMethodId) {
       return res.status(400).json({
@@ -203,6 +204,53 @@ app.post('/api/attach-payment-method', async (req: Request, res: Response) => {
         }
       }
     );
+
+    // Check if payment intent was successful
+    const responseData = response.data as any;
+    if (responseData?.data?.attributes?.status === 'succeeded') {
+      // Store payment in database if payment was successful
+      if (billId && amount && paymentMethod) {
+        try {
+          const newPayment = await prisma.payments.create({
+            data: {
+              bill_id: Number(billId),
+              payment_date: new Date(),
+              payment_method: paymentMethod,
+              amount_paid: parseFloat(amount),
+              fee: getPaymentFee(paymentMethod),
+            } as any,
+          });
+
+          // Update bill status to paid
+          await prisma.bills.update({
+            where: { id: Number(billId) },
+            data: { is_paid: true },
+          });
+
+          // Save notification for the user
+          const billRecord = await prisma.bills.findUnique({ where: { id: Number(billId) } });
+          if (billRecord && billRecord.user_id) {
+            await prisma.notifications.create({
+              data: {
+                user_id: billRecord.user_id,
+                message: `Payment received for your bill (${billId}). Amount: ₱${amount}, Fee: ₱${(newPayment as any).fee || 0}`,
+                notification_date: new Date(),
+              },
+            });
+          }
+
+          // Emit real-time event to admins
+          io.emit("newPayment", {
+            message: `Payment received for bill ID: ${billId}`,
+            data: serializeBigInt(newPayment),
+          });
+
+          console.log('Payment stored in database:', newPayment);
+        } catch (dbError: any) {
+          console.error('Error storing payment in database:', dbError);
+        }
+      }
+    }
 
     res.status(200).json({
       success: true,
@@ -572,10 +620,97 @@ app.post("/api/payments", async (req: Request, res: Response) => {
 // Upload Routes
 app.use('/api', uploadRoute);
 
+// ============================================
+// WEBHOOK: PayMongo Payment Success Handler
+// ============================================
+app.post('/api/webhooks/paymongo', async (req: Request, res: Response) => {
+  try {
+    const { data } = req.body;
+
+    // Verify this is a payment.success event
+    if (data?.attributes?.type !== 'payment.success') {
+      return res.status(200).json({ success: true, message: 'Event ignored' });
+    }
+
+    const paymentData = data.attributes?.data?.attributes;
+    if (!paymentData) {
+      return res.status(400).json({ error: 'Invalid webhook data' });
+    }
+
+    // Extract payment details from webhook
+    const { amount, source, description } = paymentData;
+    
+    // Try to extract bill_id from description or metadata
+    // Format: "bill_id:123,amount:5000"
+    let billId: number | null = null;
+    if (description && description.includes('bill_id:')) {
+      const match = description.match(/bill_id:(\d+)/);
+      if (match) billId = Number(match[1]);
+    }
+
+    if (!billId) {
+      console.warn('No bill_id found in payment webhook');
+      return res.status(200).json({ success: true, message: 'Payment recorded but bill not found' });
+    }
+
+    // Determine payment method from source
+    const paymentMethodMap: { [key: string]: string } = {
+      'gcash': 'GCash',
+      'paymaya': 'PayMaya',
+      'card': 'Credit/Debit Card',
+      'doku_bank_transfer': 'Bank Transfer',
+    };
+    const paymentMethod = paymentMethodMap[source?.type] || source?.type || 'Unknown';
+
+    // Store payment in database
+    const newPayment = await prisma.payments.create({
+      data: {
+        bill_id: billId,
+        payment_date: new Date(),
+        payment_method: paymentMethod,
+        amount_paid: amount / 100, // Convert from centavos to PHP
+        fee: 0, // Fees are typically handled by PayMongo
+      } as any,
+    });
+
+    // Update bill status to paid
+    await prisma.bills.update({
+      where: { id: billId },
+      data: { is_paid: true },
+    });
+
+    // Send notification to user
+    const billRecord = await prisma.bills.findUnique({ where: { id: billId } });
+    if (billRecord && billRecord.user_id) {
+      await prisma.notifications.create({
+        data: {
+          user_id: billRecord.user_id,
+          message: `Payment received for your bill (${billId}). Amount: ₱${(amount / 100).toFixed(2)}`,
+          notification_date: new Date(),
+        },
+      });
+    }
+
+    // Emit real-time event to admins
+    io.emit("newPayment", {
+      message: `Payment received for bill ID: ${billId}`,
+      data: serializeBigInt(newPayment),
+    });
+
+    console.log('Payment webhook processed successfully:', newPayment);
+    res.status(200).json({ success: true, data: newPayment });
+
+  } catch (error: any) {
+    console.error('Webhook Error:', error);
+    res.status(500).json({ error: 'Webhook processing failed', message: error.message });
+  }
+});
+
 const PORT = process.env.PORT || 4000;
 server.listen(PORT, () => {
   console.log(`🚀 Server running at http://localhost:${PORT}`);
   console.log(`📍 Create payment intent: POST http://localhost:${PORT}/api/create-payment-intent`);
   console.log(`📍 Attach payment method: POST http://localhost:${PORT}/api/attach-payment-method`);
   console.log(`📍 Get payment intent: GET http://localhost:${PORT}/api/payment-intent/:id`);
+  console.log(`📍 PayMongo Webhook: POST http://localhost:${PORT}/api/webhooks/paymongo`);
 });
