@@ -130,10 +130,10 @@ app.post('/api/create-payment-intent', async (req: Request<{}, {}, CreatePayment
     } = req.body;
 
     // Validate amount
-    if (!amount || amount <= 0) {
+    if (!amount || amount < 1) {
       return res.status(400).json({
         success: false,
-        error: 'Invalid amount. Amount must be greater than 0.'
+        error: 'Invalid amount. Amount must be at least 1 PHP.'
       });
     }
 
