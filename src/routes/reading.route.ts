@@ -94,4 +94,31 @@ router.post("/", upload.single("photo"), async (req, res) => {
   }
 });
 
+// GET /api/readings/latest/:userId
+router.get("/latest/:userId", async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    const readings = await prisma.meter_readings.findMany({
+      where: { user_id: BigInt(userId) },
+      orderBy: [
+        { reading_date: 'desc' },
+        { id: 'desc' }
+      ],
+      take: 2
+    });
+
+    const present = readings[0];
+    const previous = readings[1];
+
+    res.json({
+      present: present ? serializeBigInt(present) : null,
+      previous: previous ? serializeBigInt(previous) : null
+    });
+  } catch (error: any) {
+    console.error("❌ Error fetching latest readings:", error.message);
+    res.status(500).json({ error: "Failed to fetch readings" });
+  }
+});
+
 export default router;
