@@ -138,20 +138,20 @@ app.post('/api/create-payment-intent', async (req: Request<{}, {}, CreatePayment
     }
 
      // Create payment intent using PayMongo REST API
-    const response = await paymongoAPI.post('/payment_intents', {
-      data: {
-        attributes: {
-          amount: amount, // Amount in centavos (e.g., 2000 = ₱20.00)
-          payment_method_allowed: paymentMethods,
-          payment_method_options: { 
-            card: { request_three_d_secure: 'any' } 
-          },
-          currency: 'PHP',
-          capture_type: 'automatic',
-          statement_descriptor: description
-        }
-      }
-    });
+     const response = await paymongoAPI.post('/payment_intents', {
+       data: {
+         attributes: {
+           amount: Math.round(amount * 100), // Convert to centavos (e.g., 20.00 -> 2000)
+           payment_method_allowed: paymentMethods,
+           payment_method_options: {
+             card: { request_three_d_secure: 'any' }
+           },
+           currency: 'PHP',
+           capture_type: 'automatic',
+           statement_descriptor: description
+         }
+       }
+     });
 
     // Return success response
     res.status(200).json({
