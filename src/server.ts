@@ -122,9 +122,10 @@ const upload = multer({
 
 // Route to create a payment intent
 app.post('/api/create-payment-intent', async (req: Request<{}, {}, CreatePaymentIntentBody>, res: Response) => {
+  console.log('Create Payment Intent called:', req.url, req.body);
   try {
-    const { 
-      amount, 
+    const {
+      amount,
       paymentMethods = ['gcash', 'paymaya'],
       description = 'Anopog Water Billing System'
     } = req.body;
@@ -157,7 +158,7 @@ app.post('/api/create-payment-intent', async (req: Request<{}, {}, CreatePayment
     // Return success response
     res.status(200).json({
       success: true,
-      data: response.data
+      data: (response.data as any).data.attributes
     });
 
   } catch (error: any) {
