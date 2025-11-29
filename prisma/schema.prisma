@@ -56,6 +56,7 @@ model bills {
   amount_due       Float
   due_date         DateTime
   is_paid          Boolean
+  payments         payments[]
 }
 
 model payments {
@@ -64,6 +65,7 @@ model payments {
   payment_date   DateTime @db.Date
   payment_method String
   amount_paid    Decimal  @db.Decimal
+  bill           bills    @relation(fields: [bill_id], references: [id])
 }
 
 model issues {

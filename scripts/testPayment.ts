@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 dotenv.config();
 import { createPayment } from '../src/services/paymentsService';
-import { prisma } from '../src/lib/prisma';
+import prisma from '../src/lib/prisma';
 
 (async () => {
   try {
@@ -38,10 +38,11 @@ import { prisma } from '../src/lib/prisma';
       // Create a bill attached to the reading and user
       bill = await prisma.bills.create({
         data: {
-          user_id: user.id,
-          meter_reading_id: reading.id,
+          user_id: Number(user.id),
+          meter_reading_id: Number(reading.id),
           amount_due: 100.0,
           due_date: new Date(),
+          is_paid: false,
         },
       });
     }

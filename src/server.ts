@@ -23,7 +23,7 @@ import {
   getConsumersByPurok
 } from './controllers/userController';
 import { sendSMSMessage } from './controllers/smsController';
-import { createPayment, getPaymentFee } from './services/paymentsService';
+import { createPayment, getPaymentFee, getPayments } from './services/paymentsService';
 import uploadRoute from './routes/upload.route';
 import readingRoute from "./routes/reading.route";
 import { serializeBigInt } from './utils/types';
@@ -221,10 +221,10 @@ app.post('/api/attach-payment-method', async (req: Request, res: Response) => {
             } as any,
           });
 
-          // Update bill status to paid
+          // Update bill status to paid and set amount_due to 0
           await prisma.bills.update({
             where: { id: Number(billId) },
-            data: { is_paid: true },
+            data: { is_paid: true, amount_due: 0 },
           });
 
           // Save notification for the user
@@ -593,6 +593,12 @@ app.post("/api/payments", async (req: Request, res: Response) => {
     // Create payment (DB) - fee is calculated automatically in the service
     const newPayment = await createPayment({ bill_id, payment_date, payment_method, amount_paid });
 
+    // Update bill status to paid and set amount_due to 0
+    await prisma.bills.update({
+      where: { id: Number(bill_id) },
+      data: { is_paid: true, amount_due: 0 },
+    });
+
     // Emit real-time event to admins
     io.emit("newPayment", {
       message: `Payment received for bill ID: ${bill_id}`,
@@ -617,6 +623,19 @@ app.post("/api/payments", async (req: Request, res: Response) => {
     res.status(500).json({ error: error.message });
   }
 });
+
+// Route: Get all payments with related data
+app.get("/api/payments", async (req: Request, res: Response) => {
+  try {
+    const payments = await getPayments();
+
+    res.status(200).json({ success: true, payments: serializeBigInt(payments) });
+  } catch (error: any) {
+    console.error("Get Payments Error:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Upload Routes
 app.use('/api', uploadRoute);
 
@@ -672,10 +691,10 @@ app.post('/api/webhooks/paymongo', async (req: Request, res: Response) => {
       } as any,
     });
 
-    // Update bill status to paid
+    // Update bill status to paid and set amount_due to 0
     await prisma.bills.update({
       where: { id: billId },
-      data: { is_paid: true },
+      data: { is_paid: true, amount_due: 0 },
     });
 
     // Send notification to user

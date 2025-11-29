@@ -38,3 +38,16 @@ export async function createPayment(input: CreatePaymentInput) {
 
   return newPayment;
 }
+
+export async function getPayments() {
+  const payments = await prisma.payments.findMany({
+    include: {
+      bill: true,
+    },
+    orderBy: {
+      payment_date: 'desc',
+    },
+  });
+
+  return payments;
+}
