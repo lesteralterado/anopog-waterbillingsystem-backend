@@ -92,7 +92,9 @@ export const registerDeviceToken = async (req: Request, res: Response) => {
 
     await prisma.users.update({
       where: { id: BigInt(userId) },
-      data: { device_token: deviceToken },
+      data: {
+        device_token: deviceToken
+      } as any,
     });
 
     res.status(200).json({ success: true, message: 'Device token registered successfully' });

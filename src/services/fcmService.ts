@@ -5,8 +5,8 @@ export const sendFCMNotification = async (userId: bigint, title: string, body: s
   try {
     const user = await prisma.users.findUnique({
       where: { id: userId },
-      select: { device_token: true },
-    });
+      select: { device_token: true } as any,
+    }) as any;
 
     if (!user || !user.device_token) {
       console.log(`No device token found for user ${userId}`);
@@ -33,7 +33,7 @@ export const updateDeviceToken = async (userId: bigint, deviceToken: string) => 
   try {
     await prisma.users.update({
       where: { id: userId },
-      data: { device_token: deviceToken },
+      data: { device_token: deviceToken } as any,
     });
     console.log(`Device token updated for user ${userId}`);
   } catch (error) {
