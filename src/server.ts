@@ -26,6 +26,7 @@ import { sendSMSMessage } from './controllers/smsController';
 import { createPayment, getPaymentFee, getPayments } from './services/paymentsService';
 import uploadRoute from './routes/upload.route';
 import readingRoute from "./routes/reading.route";
+import issueRoute from "./routes/issue.route";
 import { serializeBigInt } from './utils/types';
 import { setIo, emitToClients } from './services/socketService';
 
@@ -638,6 +639,9 @@ app.get("/api/payments", async (req: Request, res: Response) => {
 
 // Upload Routes
 app.use('/api', uploadRoute);
+
+// Issue Routes
+app.use('/api', issueRoute);
 
 // ============================================
 // WEBHOOK: PayMongo Payment Success Handler

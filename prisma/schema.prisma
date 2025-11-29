@@ -25,6 +25,7 @@ model users {
   // scalar `purok` value for compatibility with the frontend payload.
   puroks         puroks[]         @relation("puroksTousers")
   purok          String?
+  device_token   String?
 
   // Additional profile fields requested by the frontend
   meter_number   String?
@@ -75,6 +76,7 @@ model issues {
   reported_date DateTime  @db.Date
   is_resolved   Boolean?  @default(false)
   resolved_date DateTime? @db.Date
+  fixing_date   DateTime? @db.Date
   user          users     @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
