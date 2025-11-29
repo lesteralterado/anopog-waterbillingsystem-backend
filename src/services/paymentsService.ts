@@ -33,7 +33,6 @@ export async function createPayment(input: CreatePaymentInput) {
       payment_date: new Date(payment_date),
       payment_method,
       amount_paid: parseFloat(amount_paid as any),
-      fee: calculatedFee,
     } as any,
   });
 

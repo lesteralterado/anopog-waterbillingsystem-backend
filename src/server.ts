@@ -218,7 +218,6 @@ app.post('/api/attach-payment-method', async (req: Request, res: Response) => {
               payment_date: new Date(),
               payment_method: paymentMethod,
               amount_paid: parseFloat(amount),
-              fee: getPaymentFee(paymentMethod),
             } as any,
           });
 
@@ -234,7 +233,7 @@ app.post('/api/attach-payment-method', async (req: Request, res: Response) => {
             await prisma.notifications.create({
               data: {
                 user_id: billRecord.user_id,
-                message: `Payment received for your bill (${billId}). Amount: ₱${amount}, Fee: ₱${(newPayment as any).fee || 0}`,
+                message: `Payment received for your bill (${billId}). Amount: ₱${amount}`,
                 notification_date: new Date(),
               },
             });
@@ -606,7 +605,7 @@ app.post("/api/payments", async (req: Request, res: Response) => {
       await prisma.notifications.create({
         data: {
           user_id: billRecord.user_id,
-          message: `Payment received for your bill (${bill_id}). Amount: ₱${amount_paid}, Fee: ₱${(newPayment as any).fee || 0}`,
+          message: `Payment received for your bill (${bill_id}). Amount: ₱${amount_paid}`,
           notification_date: new Date(),
         },
       });
@@ -670,7 +669,6 @@ app.post('/api/webhooks/paymongo', async (req: Request, res: Response) => {
         payment_date: new Date(),
         payment_method: paymentMethod,
         amount_paid: amount / 100, // Convert from centavos to PHP
-        fee: 0, // Fees are typically handled by PayMongo
       } as any,
     });
 

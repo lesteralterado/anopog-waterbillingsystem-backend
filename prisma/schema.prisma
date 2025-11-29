@@ -64,7 +64,6 @@ model payments {
   payment_date   DateTime @db.Date
   payment_method String
   amount_paid    Decimal  @db.Decimal
-  fee            Decimal? @db.Decimal @default(0)
 }
 
 model issues {
