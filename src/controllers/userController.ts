@@ -249,8 +249,18 @@ export async function loginUser(req: Request, res: Response) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
+    // Check if password is hashed
+    const isHashed = user.password.startsWith('$2b$') || user.password.startsWith('$2a$');
+
     // Check password
-    const isValidPassword = await bcrypt.compare(password, user.password);
+    let isValidPassword: boolean;
+    if (isHashed) {
+      isValidPassword = await bcrypt.compare(password, user.password);
+    } else {
+      // Fallback for plain text passwords
+      isValidPassword = password === user.password;
+    }
+
     if (!isValidPassword) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
