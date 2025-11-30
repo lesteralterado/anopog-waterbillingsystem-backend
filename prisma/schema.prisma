@@ -52,9 +52,9 @@ model meter_readings {
 }
 
 model bills {
-  id               Int      @id @default(autoincrement())
-  user_id          Int
-  meter_reading_id Int
+  id               BigInt   @id @default(autoincrement())
+  user_id          BigInt
+  meter_reading_id BigInt
   amount_due       Float
   due_date         DateTime
   is_paid          Boolean
@@ -63,7 +63,7 @@ model bills {
 
 model payments {
   id             BigInt   @id @default(autoincrement())
-  bill_id        Int
+  bill_id        BigInt
   payment_date   DateTime @db.Date
   payment_method String
   amount_paid    Decimal  @db.Decimal

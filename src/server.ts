@@ -355,7 +355,7 @@ app.post("/api/meter-reading", upload.single("image"), async (req: Request, res:
     // Save to DB
     const newReading = await prisma.meter_readings.create({
       data: {
-        user_id: BigInt(user_id),
+        user_id: Number(user_id),
         reading_date: new Date(),
         reading_value: parseFloat(reading_value),
         image_url: imageUrl,
@@ -688,7 +688,7 @@ app.post('/api/webhooks/paymongo', async (req: Request, res: Response) => {
     // Store payment in database
     const newPayment = await prisma.payments.create({
       data: {
-        bill_id: billId,
+        bill_id: Number(billId),
         payment_date: new Date(),
         payment_method: paymentMethod,
         amount_paid: amount / 100, // Convert from centavos to PHP
@@ -697,12 +697,12 @@ app.post('/api/webhooks/paymongo', async (req: Request, res: Response) => {
 
     // Update bill status to paid and set amount_due to 0
     await prisma.bills.update({
-      where: { id: billId },
+      where: { id: Number(billId) },
       data: { is_paid: true, amount_due: 0 },
     });
 
     // Send notification to user
-    const billRecord = await prisma.bills.findUnique({ where: { id: billId } });
+    const billRecord = await prisma.bills.findUnique({ where: { id: Number(billId) } });
     if (billRecord && billRecord.user_id) {
       await prisma.notifications.create({
         data: {

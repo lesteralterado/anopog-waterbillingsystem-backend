@@ -36,7 +36,7 @@ router.post("/", upload.single("photo"), async (req, res) => {
 
     const newReading = await prisma.meter_readings.create({
       data: {
-        user_id: BigInt(consumer_id),
+        user_id: Number(consumer_id),
         reading_date: new Date(),
         reading_value: parseFloat(reading_value),
         image_url: imageUrl,
@@ -45,7 +45,7 @@ router.post("/", upload.single("photo"), async (req, res) => {
 
     // Get previous reading for consumption calculation
     const previousReading = await prisma.meter_readings.findFirst({
-      where: { user_id: BigInt(consumer_id) },
+      where: { user_id: Number(consumer_id) },
       orderBy: { reading_date: 'desc' },
       skip: 1, // Skip the latest (current) to get previous
     });
@@ -69,7 +69,7 @@ router.post("/", upload.single("photo"), async (req, res) => {
     // Store notification in DB
     await prisma.notifications.create({
       data: {
-        user_id: BigInt(consumer_id),
+        user_id: Number(consumer_id),
         message: `Your bill has been calculated. Amount due: ₱${amountDue.toFixed(2)}`,
         notification_date: new Date(),
       },
@@ -99,8 +99,12 @@ router.get("/latest/:userId", async (req, res) => {
   try {
     const { userId } = req.params;
 
+    if (isNaN(Number(userId))) {
+      return res.status(400).json({ error: "Invalid user ID" });
+    }
+
     const readings = await prisma.meter_readings.findMany({
-      where: { user_id: BigInt(userId) },
+      where: { user_id: Number(userId) },
       orderBy: [
         { reading_date: 'desc' },
         { id: 'desc' }

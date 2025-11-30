@@ -147,6 +147,10 @@ export async function getUserById(req: Request, res: Response) {
   try {
     const { id } = req.params;
 
+    if (isNaN(Number(id))) {
+      return res.status(400).json({ message: "Invalid user ID" });
+    }
+
     const user = await prisma.users.findUnique({
       where: { id: BigInt(id) },
       select: {
@@ -188,6 +192,11 @@ export async function getUserById(req: Request, res: Response) {
 export async function updateUser(req: Request, res: Response) {
   try {
     const { id } = req.params;
+
+    if (isNaN(Number(id))) {
+      return res.status(400).json({ message: "Invalid user ID" });
+    }
+
   const { username, password, role_id, purok, meter_number, full_name, address, phone, email } = req.body;
 
   const updateData: any = {};
@@ -247,6 +256,10 @@ export async function updateUser(req: Request, res: Response) {
 export async function deleteUser(req: Request, res: Response) {
   try {
     const { id } = req.params;
+
+    if (isNaN(Number(id))) {
+      return res.status(400).json({ message: "Invalid user ID" });
+    }
 
     await prisma.users.delete({
       where: { id: BigInt(id) }
