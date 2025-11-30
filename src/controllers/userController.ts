@@ -52,19 +52,25 @@ export async function createUser(req: Request, res: Response) {
     }
 
     // Create user
+    const userData: any = {
+      username: username || null,
+      password: hashedPassword,
+      role_id: BigInt(role_id),
+      purok: purok ? purok.toString() : null,
+      meter_number: meter_number || null,
+      full_name: full_name || null,
+      address: address || null,
+      phone: phone || null,
+      email: email || null,
+    };
+
+    // Only add firebase_uid if it exists (to avoid DB errors if column not added yet)
+    if (firebaseUid) {
+      userData.firebase_uid = firebaseUid;
+    }
+
     const newUser = await prisma.users.create({
-      data: {
-        username: username || null,
-        password: hashedPassword,
-        firebase_uid: firebaseUid,
-        role_id: BigInt(role_id),
-        purok: purok ? purok.toString() : null,
-        meter_number: meter_number || null,
-        full_name: full_name || null,
-        address: address || null,
-        phone: phone || null,
-        email: email || null,
-      } as any,
+      data: userData,
       select: {
         id: true,
         username: true,
