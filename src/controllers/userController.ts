@@ -1,35 +1,62 @@
 import { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import admin from '../config/firebase';
 import prisma from '../lib/prisma';
 import { emitToClients } from '../services/socketService';
 
 export async function createUser(req: Request, res: Response) {
   try {
-  const { username, password, role_id, purok, meter_number, full_name, address, phone, email } = req.body;
+  const { username, password, role_id, purok, meter_number, full_name, address, phone, email, idToken } = req.body;
 
-    // Validate required fields
-    if (!username || !password || !role_id) {
-      return res.status(400).json({ message: "Missing required fields: username, password, role_id" });
+    let firebaseUid: string | null = null;
+
+    if (idToken) {
+      // Verify Firebase token and get UID
+      try {
+        const decodedToken = await admin.auth().verifyIdToken(idToken);
+        firebaseUid = decodedToken.uid;
+
+        // Check if user with this firebase_uid already exists
+        const existingFirebaseUser = await prisma.users.findUnique({
+          where: { firebase_uid: firebaseUid } as any
+        });
+
+        if (existingFirebaseUser) {
+          return res.status(409).json({ message: "User with this Firebase account already exists" });
+        }
+      } catch (error) {
+        console.error("Firebase token verification error:", error);
+        return res.status(400).json({ message: "Invalid Firebase token" });
+      }
+    } else {
+      // Traditional registration
+      if (!username || !password || !role_id) {
+        return res.status(400).json({ message: "Missing required fields: username, password, role_id" });
+      }
+
+      // Check if user already exists
+      const existingUser = await prisma.users.findUnique({
+        where: { username }
+      });
+
+      if (existingUser) {
+        return res.status(409).json({ message: "Username already exists" });
+      }
     }
 
-    // Check if user already exists
-    const existingUser = await prisma.users.findUnique({
-      where: { username }
-    });
-
-    if (existingUser) {
-      return res.status(409).json({ message: "Username already exists" });
+    // Hash password if provided
+    let hashedPassword = null;
+    if (password) {
+      hashedPassword = await bcrypt.hash(password, 10);
     }
-
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
 
     // Create user
     const newUser = await prisma.users.create({
       data: {
-        username,
+        username: username || null,
         password: hashedPassword,
+        firebase_uid: firebaseUid,
         role_id: BigInt(role_id),
         purok: purok ? purok.toString() : null,
         meter_number: meter_number || null,
@@ -37,7 +64,7 @@ export async function createUser(req: Request, res: Response) {
         address: address || null,
         phone: phone || null,
         email: email || null,
-      },
+      } as any,
       select: {
         id: true,
         username: true,
@@ -231,38 +258,84 @@ export async function deleteUser(req: Request, res: Response) {
 
 export async function loginUser(req: Request, res: Response) {
   try {
-    const { username, password } = req.body;
+    const { username, password, idToken } = req.body;
 
-    if (!username || !password) {
-      return res.status(400).json({ message: "Username and password are required" });
-    }
+    let user;
 
-    // Find user
-    const user = await prisma.users.findUnique({
-      where: { username },
-      include: {
-        role: true
+    if (idToken) {
+      // Firebase Auth login
+      try {
+        const decodedToken = await admin.auth().verifyIdToken(idToken);
+        const firebaseUid = decodedToken.uid;
+
+        // Find user by firebase_uid
+        user = await prisma.users.findUnique({
+          where: { firebase_uid: firebaseUid } as any,
+          include: {
+            role: true
+          }
+        }) as any;
+
+        if (!user) {
+          // If user not found, try to find by email if available
+          if (decodedToken.email) {
+            user = await prisma.users.findFirst({
+              where: { email: decodedToken.email },
+              include: {
+                role: true
+              }
+            });
+
+            // If found, update firebase_uid
+            if (user) {
+              await prisma.users.update({
+                where: { id: user.id },
+                data: { firebase_uid: firebaseUid } as any
+              });
+            }
+          }
+        }
+
+        if (!user) {
+          return res.status(401).json({ message: "User not found. Please register first." });
+        }
+      } catch (error) {
+        console.error("Firebase token verification error:", error);
+        return res.status(401).json({ message: "Invalid Firebase token" });
       }
-    });
-
-    if (!user) {
-      return res.status(401).json({ message: "Invalid credentials" });
-    }
-
-    // Check if password is hashed
-    const isHashed = user.password.startsWith('$2b$') || user.password.startsWith('$2a$');
-
-    // Check password
-    let isValidPassword: boolean;
-    if (isHashed) {
-      isValidPassword = await bcrypt.compare(password, user.password);
     } else {
-      // Fallback for plain text passwords
-      isValidPassword = password === user.password;
-    }
+      // Traditional username/password login
+      if (!username || !password) {
+        return res.status(400).json({ message: "Username and password are required" });
+      }
 
-    if (!isValidPassword) {
-      return res.status(401).json({ message: "Invalid credentials" });
+      // Find user
+      user = await prisma.users.findUnique({
+        where: { username },
+        include: {
+          role: true
+        }
+      });
+
+      if (!user) {
+        return res.status(401).json({ message: "Invalid credentials" });
+      }
+
+      // Check if password is hashed
+      const isHashed = user.password.startsWith('$2b$') || user.password.startsWith('$2a$');
+
+      // Check password
+      let isValidPassword: boolean;
+      if (isHashed) {
+        isValidPassword = await bcrypt.compare(password, user.password);
+      } else {
+        // Fallback for plain text passwords
+        isValidPassword = password === user.password;
+      }
+
+      if (!isValidPassword) {
+        return res.status(401).json({ message: "Invalid credentials" });
+      }
     }
 
     // Generate JWT token

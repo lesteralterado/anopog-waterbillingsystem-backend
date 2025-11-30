@@ -10,7 +10,7 @@ if (fs.existsSync(serviceAccountPath)) {
     credential: admin.credential.cert(serviceAccount),
   });
 } else {
-  console.warn('Firebase service account key not found. FCM will not work until you add the key file.');
+  console.warn('Firebase service account key not found. FCM and Firebase Auth will not work until you add the key file.');
   // Initialize with default credentials or skip
   admin.initializeApp();
 }

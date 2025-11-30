@@ -16,6 +16,7 @@ model users {
   id             BigInt           @id @default(autoincrement())
   username       String           @unique
   password       String
+  firebase_uid   String?          @unique
   role_id        BigInt
   issues         issues[]
   meter_readings meter_readings[]
