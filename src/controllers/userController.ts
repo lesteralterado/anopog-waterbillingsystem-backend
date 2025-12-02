@@ -399,10 +399,17 @@ export async function loginUser(req: Request, res: Response) {
 
 export async function getConsumersByPurok(req: Request, res: Response) {
   try {
+    console.log('getConsumersByPurok called');
+
     const users = await prisma.users.findMany({
       where: {
         purok: {
           not: null
+        },
+        role: {
+          name: {
+            not: 'admin' // Exclude admins, assuming consumers have other roles
+          }
         }
       },
       select: {
@@ -424,6 +431,8 @@ export async function getConsumersByPurok(req: Request, res: Response) {
       orderBy: { username: 'asc' }
     });
 
+    console.log('Found users with purok:', users.length);
+
     // Group users by purok
     const purokMap = new Map<string, typeof users>();
 
@@ -444,6 +453,8 @@ export async function getConsumersByPurok(req: Request, res: Response) {
         role_id: user.role_id.toString()
       }))
     }));
+
+    console.log('Returning consumers by purok:', consumersByPurok.length, 'puroks');
 
     res.json(consumersByPurok);
   } catch (error: any) {

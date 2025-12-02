@@ -566,13 +566,35 @@ app.get("/api/billing", async (req: Request, res: Response) => {
 });
 
 
-// Route: Fetch all notifications
+// Route: Fetch all notifications (admin)
 app.get("/api/notifications", async (_req: Request, res: Response) => {
   const notifications = await prisma.notifications.findMany({
     orderBy: { notification_date: "desc" },
     take: 10,
   });
   res.json(serializeBigInt(notifications));
+});
+
+// Route: Fetch user notifications
+app.get("/api/user/notifications/:userId", async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+
+    if (isNaN(Number(userId))) {
+      return res.status(400).json({ error: "Invalid user ID" });
+    }
+
+    const notifications = await prisma.notifications.findMany({
+      where: { user_id: Number(userId) },
+      orderBy: { notification_date: "desc" },
+      take: 20, // More for users
+    });
+
+    res.json(serializeBigInt(notifications));
+  } catch (error: any) {
+    console.error("Get User Notifications Error:", error);
+    res.status(500).json({ error: error.message });
+  }
 });
 
 // User Management Routes
