@@ -356,7 +356,7 @@ app.post("/api/meter-reading", upload.single("image"), async (req: Request, res:
     // Save to DB
     const newReading = await prisma.meter_readings.create({
       data: {
-        user_id: BigInt(user_id),
+        user_id: Number(user_id),
         reading_date: new Date(),
         reading_value: parseFloat(reading_value),
         image_url: imageUrl,
