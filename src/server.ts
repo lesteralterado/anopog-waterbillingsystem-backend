@@ -562,7 +562,7 @@ app.get("/api/notifications", async (_req: Request, res: Response) => {
     orderBy: { notification_date: "desc" },
     take: 10,
   });
-  res.json(notifications);
+  res.json(serializeBigInt(notifications));
 });
 
 // User Management Routes

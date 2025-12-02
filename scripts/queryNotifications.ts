@@ -2,6 +2,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 import prisma from '../src/lib/prisma';
+import { serializeBigInt } from '../src/utils/types';
 
 async function queryNotifications() {
   try {
@@ -10,7 +11,7 @@ async function queryNotifications() {
     });
 
     console.log('All notifications in database:');
-    console.log(JSON.stringify(notifications, null, 2));
+    console.log(JSON.stringify(serializeBigInt(notifications), null, 2));
   } catch (error) {
     console.error('Error querying notifications:', error);
   } finally {
