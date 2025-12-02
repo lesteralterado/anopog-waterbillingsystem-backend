@@ -27,6 +27,7 @@ import { createPayment, getPaymentFee, getPayments } from './services/paymentsSe
 import uploadRoute from './routes/upload.route';
 import readingRoute from "./routes/reading.route";
 import issueRoute from "./routes/issue.route";
+import adminRoute from "./routes/admin.route";
 import { serializeBigInt } from './utils/types';
 import { setIo, emitToClients } from './services/socketService';
 
@@ -355,7 +356,7 @@ app.post("/api/meter-reading", upload.single("image"), async (req: Request, res:
     // Save to DB
     const newReading = await prisma.meter_readings.create({
       data: {
-        user_id: Number(user_id),
+        user_id: BigInt(user_id),
         reading_date: new Date(),
         reading_value: parseFloat(reading_value),
         image_url: imageUrl,
@@ -364,7 +365,7 @@ app.post("/api/meter-reading", upload.single("image"), async (req: Request, res:
 
     // Get previous reading for consumption calculation
     const previousReading = await prisma.meter_readings.findFirst({
-      where: { user_id: BigInt(user_id) },
+      where: { user_id: Number(user_id) },
       orderBy: { reading_date: 'desc' },
       skip: 1, // Skip the latest (current) to get previous
     });
@@ -402,7 +403,7 @@ app.post("/api/meter-reading", upload.single("image"), async (req: Request, res:
     // ✅ Store notification in DB
     await prisma.notifications.create({
       data: {
-        user_id: BigInt(user_id),
+        user_id: Number(user_id),
         message: `Your bill has been calculated. Amount due: ₱${amountDue.toFixed(2)}`,
         notification_date: new Date(),
       },
@@ -642,6 +643,9 @@ app.use('/api', uploadRoute);
 
 // Issue Routes
 app.use('/api', issueRoute);
+
+// Admin Routes
+app.use('/api/admin', adminRoute);
 
 // ============================================
 // WEBHOOK: PayMongo Payment Success Handler
