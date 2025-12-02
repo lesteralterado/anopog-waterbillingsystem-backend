@@ -1,7 +1,7 @@
 import admin from '../config/firebase';
 import prisma from '../lib/prisma';
 
-export const sendFCMNotification = async (userId: bigint, title: string, body: string, data?: any) => {
+export const sendFCMNotification = async (userId: number, title: string, body: string, data?: any) => {
   try {
     const user = await prisma.users.findUnique({
       where: { id: userId },
@@ -29,7 +29,7 @@ export const sendFCMNotification = async (userId: bigint, title: string, body: s
   }
 };
 
-export const updateDeviceToken = async (userId: bigint, deviceToken: string) => {
+export const updateDeviceToken = async (userId: number, deviceToken: string) => {
   try {
     await prisma.users.update({
       where: { id: userId },

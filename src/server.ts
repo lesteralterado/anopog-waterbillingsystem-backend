@@ -30,6 +30,7 @@ import issueRoute from "./routes/issue.route";
 import adminRoute from "./routes/admin.route";
 import { serializeBigInt } from './utils/types';
 import { setIo, emitToClients } from './services/socketService';
+import { sendFCMNotification } from './services/fcmService';
 
 const app = express();
 const server = http.createServer(app);
@@ -239,6 +240,8 @@ app.post('/api/attach-payment-method', async (req: Request, res: Response) => {
                 notification_date: new Date(),
               },
             });
+            // Send FCM notification
+            await sendFCMNotification(billRecord.user_id, 'Payment Received', `Payment received for your bill (${billId}). Amount: ₱${amount}`);
           }
 
           // Emit real-time event to admins
@@ -409,6 +412,9 @@ app.post("/api/meter-reading", upload.single("image"), async (req: Request, res:
       },
     });
 
+    // Send FCM notification
+    await sendFCMNotification(Number(user_id), 'Bill Calculated', `Your bill has been calculated. Amount due: ₱${amountDue.toFixed(2)}`);
+
     res.status(201).json({ success: true, newReading: serializeBigInt(newReading), bill: serializeBigInt(newBill), consumption: consumption });
   } catch (error: any) {
     console.error("Meter Reading Error:", error);
@@ -479,6 +485,8 @@ app.post("/api/bills", async (req: Request, res: Response) => {
           notification_date: new Date(),
         },
       });
+      // Send FCM notification
+      await sendFCMNotification(Number(billData.userId), 'Bill Created', `Your bill has been created. Amount due: ₱${billData.amountDue}`);
     }
 
     res.status(201).json({ success: true, newBill: serializeBigInt(newBill) });
@@ -529,6 +537,8 @@ app.post("/api/bulk-bills", async (req: Request, res: Response) => {
             notification_date: new Date(),
           },
         });
+        // Send FCM notification
+        await sendFCMNotification(Number(billData.userId), 'Bill Created', `Your bill has been created. Amount due: ₱${billData.amountDue}`);
       }
     }
 
@@ -617,6 +627,8 @@ app.post("/api/payments", async (req: Request, res: Response) => {
           notification_date: new Date(),
         },
       });
+      // Send FCM notification
+      await sendFCMNotification(billRecord.user_id, 'Payment Received', `Payment received for your bill (${bill_id}). Amount: ₱${amount_paid}`);
     }
 
     res.status(201).json({ success: true, newPayment: serializeBigInt(newPayment) });
@@ -715,6 +727,8 @@ app.post('/api/webhooks/paymongo', async (req: Request, res: Response) => {
           notification_date: new Date(),
         },
       });
+      // Send FCM notification
+      await sendFCMNotification(billRecord.user_id, 'Payment Received', `Payment received for your bill (${billId}). Amount: ₱${(amount / 100).toFixed(2)}`);
     }
 
     // Emit real-time event to admins

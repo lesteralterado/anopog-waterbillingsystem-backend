@@ -4,6 +4,7 @@ import prisma from "../config/prisma";
 import cloudinary from "../config/cloudinary";
 import { serializeBigInt } from "../utils/types";
 import { emitToClients } from "../services/socketService";
+import { sendFCMNotification } from "../services/fcmService";
 
 const router = express.Router();
 const upload = multer({ storage: multer.memoryStorage() });
@@ -74,6 +75,9 @@ router.post("/", upload.single("photo"), async (req, res) => {
         notification_date: new Date(),
       },
     });
+
+    // Send FCM notification
+    await sendFCMNotification(Number(consumer_id), 'Bill Calculated', `Your bill has been calculated. Amount due: ₱${amountDue.toFixed(2)}`);
 
     // Send calculation data to Consumer via socket
     emitToClients("billCalculated", {

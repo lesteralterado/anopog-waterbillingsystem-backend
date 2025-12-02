@@ -13,7 +13,7 @@ export const createIssue = async (req: Request, res: Response) => {
 
     const newIssue = await prisma.issues.create({
       data: {
-        user_id: BigInt(userId),
+        user_id: Number(userId),
         description,
         reported_date: new Date(),
       },
@@ -56,13 +56,15 @@ export const updateIssue = async (req: Request, res: Response) => {
     const { id } = req.params;
     const { isResolved, resolvedDate, fixingDate } = req.body;
 
+    console.log('Update Issue Request:', { id, isResolved, resolvedDate, fixingDate });
+
     const updateData: any = {};
     if (isResolved !== undefined) updateData.is_resolved = isResolved;
     if (resolvedDate) updateData.resolved_date = new Date(resolvedDate);
     if (fixingDate) updateData.fixing_date = new Date(fixingDate);
 
     const updatedIssue = await prisma.issues.update({
-      where: { id: BigInt(id) },
+      where: { id: Number(id) },
       data: updateData,
       include: {
         user: true,
@@ -71,8 +73,11 @@ export const updateIssue = async (req: Request, res: Response) => {
 
     // If fixing date is set, send FCM notification to consumer
     if (fixingDate) {
+      console.log('Sending FCM notification for fixing date:', fixingDate);
       const message = `Your issue has been scheduled for fixing on ${new Date(fixingDate).toLocaleDateString()}.`;
       await sendFCMNotification(updatedIssue.user_id, 'Issue Update', message);
+    } else {
+      console.log('No fixing date provided, skipping FCM notification');
     }
 
     res.status(200).json({ success: true, issue: serializeBigInt(updatedIssue) });
@@ -91,7 +96,7 @@ export const registerDeviceToken = async (req: Request, res: Response) => {
     }
 
     await prisma.users.update({
-      where: { id: BigInt(userId) },
+      where: { id: Number(userId) },
       data: {
         device_token: deviceToken
       } as any,
