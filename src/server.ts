@@ -241,7 +241,7 @@ app.post('/api/attach-payment-method', async (req: Request, res: Response) => {
               },
             });
             // Send FCM notification
-            await sendFCMNotification(billRecord.user_id, 'Payment Received', `Payment received for your bill (${billId}). Amount: ₱${amount}`);
+            await sendFCMNotification(Number(billRecord.user_id), 'Payment Received', `Payment received for your bill (${billId}). Amount: ₱${amount}`);
           }
 
           // Emit real-time event to admins
@@ -628,7 +628,7 @@ app.post("/api/payments", async (req: Request, res: Response) => {
         },
       });
       // Send FCM notification
-      await sendFCMNotification(billRecord.user_id, 'Payment Received', `Payment received for your bill (${bill_id}). Amount: ₱${amount_paid}`);
+      await sendFCMNotification(Number(billRecord.user_id), 'Payment Received', `Payment received for your bill (${bill_id}). Amount: ₱${amount_paid}`);
     }
 
     res.status(201).json({ success: true, newPayment: serializeBigInt(newPayment) });
@@ -728,7 +728,7 @@ app.post('/api/webhooks/paymongo', async (req: Request, res: Response) => {
         },
       });
       // Send FCM notification
-      await sendFCMNotification(billRecord.user_id, 'Payment Received', `Payment received for your bill (${billId}). Amount: ₱${(amount / 100).toFixed(2)}`);
+      await sendFCMNotification(Number(billRecord.user_id), 'Payment Received', `Payment received for your bill (${billId}). Amount: ₱${(amount / 100).toFixed(2)}`);
     }
 
     // Emit real-time event to admins

@@ -75,7 +75,7 @@ export const updateIssue = async (req: Request, res: Response) => {
     if (fixingDate) {
       console.log('Sending FCM notification for fixing date:', fixingDate);
       const message = `Your issue has been scheduled for fixing on ${new Date(fixingDate).toLocaleDateString()}.`;
-      await sendFCMNotification(updatedIssue.user_id, 'Issue Update', message);
+      await sendFCMNotification(Number(updatedIssue.user_id), 'Issue Update', message);
     } else {
       console.log('No fixing date provided, skipping FCM notification');
     }
