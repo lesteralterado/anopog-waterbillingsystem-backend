@@ -55,7 +55,7 @@ export async function createUser(req: Request, res: Response) {
     const userData: any = {
       username: username || null,
       password: hashedPassword,
-      role_id: BigInt(role_id),
+      role_id: Number(role_id),
       purok: purok ? purok.toString() : null,
       meter_number: meter_number || null,
       full_name: full_name || null,
@@ -152,7 +152,7 @@ export async function getUserById(req: Request, res: Response) {
     }
 
     const user = await prisma.users.findUnique({
-      where: { id: BigInt(id) },
+      where: { id: Number(id) },
       select: {
         id: true,
         username: true,
@@ -202,7 +202,7 @@ export async function updateUser(req: Request, res: Response) {
   const updateData: any = {};
 
   if (username) updateData.username = username;
-  if (role_id) updateData.role_id = BigInt(role_id);
+  if (role_id) updateData.role_id = Number(role_id);
   if (purok !== undefined) updateData.purok = purok ? purok.toString() : null;
   if (meter_number !== undefined) updateData.meter_number = meter_number;
   if (full_name !== undefined) updateData.full_name = full_name;
@@ -216,7 +216,7 @@ export async function updateUser(req: Request, res: Response) {
     }
 
     const updatedUser = await prisma.users.update({
-      where: { id: BigInt(id) },
+      where: { id: Number(id) },
       data: updateData,
       select: {
         id: true,
@@ -262,7 +262,7 @@ export async function deleteUser(req: Request, res: Response) {
     }
 
     await prisma.users.delete({
-      where: { id: BigInt(id) }
+      where: { id: Number(id) }
     });
 
     res.json({ success: true, message: "User deleted successfully" });
@@ -308,7 +308,7 @@ export async function loginUser(req: Request, res: Response) {
             // If found, update firebase_uid
             if (user) {
               await prisma.users.update({
-                where: { id: user.id },
+                where: { id: Number(user.id) },
                 data: { firebase_uid: firebaseUid } as any
               });
             }
@@ -328,9 +328,14 @@ export async function loginUser(req: Request, res: Response) {
         return res.status(400).json({ message: "Username and password are required" });
       }
 
-      // Find user
-      user = await prisma.users.findUnique({
-        where: { username },
+      // Find user by username or email
+      user = await prisma.users.findFirst({
+        where: {
+          OR: [
+            { username },
+            { email: username }
+          ]
+        },
         include: {
           role: true
         }

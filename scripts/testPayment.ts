@@ -22,7 +22,7 @@ import prisma from '../src/lib/prisma';
         data: {
           username: `testuser_${Date.now()}`,
           password: 'testpass',
-          role_id: BigInt(role.id),
+          role_id: Number(role.id),
         },
       });
 
