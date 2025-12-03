@@ -7,7 +7,7 @@ import { emitToClients } from '../services/socketService';
 
 export async function createUser(req: Request, res: Response) {
   try {
-  const { username, password, role_id, purok, meter_number, full_name, address, phone, email, idToken } = req.body;
+  const { username, password, role_id, purok, meterNumber, full_name, address, phone, email, idToken } = req.body;
 
     let firebaseUid: string | null = null;
 
@@ -57,7 +57,7 @@ export async function createUser(req: Request, res: Response) {
       password: hashedPassword,
       role_id: Number(role_id),
       purok: purok ? purok.toString() : null,
-      meter_number: meter_number || null,
+      meter_number: meterNumber || null,
       full_name: full_name || null,
       address: address || null,
       phone: phone || null,
@@ -197,14 +197,14 @@ export async function updateUser(req: Request, res: Response) {
       return res.status(400).json({ message: "Invalid user ID" });
     }
 
-  const { username, password, role_id, purok, meter_number, full_name, address, phone, email } = req.body;
+  const { username, password, role_id, purok, meterNumber, full_name, address, phone, email } = req.body;
 
   const updateData: any = {};
 
   if (username) updateData.username = username;
   if (role_id) updateData.role_id = Number(role_id);
   if (purok !== undefined) updateData.purok = purok ? purok.toString() : null;
-  if (meter_number !== undefined) updateData.meter_number = meter_number;
+  if (meterNumber !== undefined) updateData.meter_number = meterNumber;
   if (full_name !== undefined) updateData.full_name = full_name;
   if (address !== undefined) updateData.address = address;
   if (phone !== undefined) updateData.phone = phone;
