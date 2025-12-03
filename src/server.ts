@@ -26,6 +26,7 @@ import { sendSMSMessage } from './controllers/smsController';
 import { createPayment, getPaymentFee, getPayments } from './services/paymentsService';
 import uploadRoute from './routes/upload.route';
 import readingRoute from "./routes/reading.route";
+import billsRoute from "./routes/bills.route";
 import issueRoute from "./routes/issue.route";
 import adminRoute from "./routes/admin.route";
 import { serializeBigInt } from './utils/types';
@@ -58,6 +59,7 @@ interface CreatePaymentIntentBody {
 app.use(cors());
 app.use(express.json());
 app.use("/api/readings", readingRoute);
+app.use("/api/bills", billsRoute);
 app.use(bodyParser.json({ limit: '50mb' })); // Allow large images
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
@@ -593,6 +595,56 @@ app.get("/api/user/notifications/:userId", async (req: Request, res: Response) =
     res.json(serializeBigInt(notifications));
   } catch (error: any) {
     console.error("Get User Notifications Error:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Route: Fetch consumers in a specific purok
+app.get("/api/consumers-by-purok/:purok", async (req: Request, res: Response) => {
+  try {
+    const { purok } = req.params;
+
+    console.log('getConsumersByPurok called for purok:', purok);
+
+    const users = await prisma.users.findMany({
+      where: {
+        purok: purok,
+        role: {
+          name: {
+            not: 'admin' // Exclude admins
+          }
+        }
+      },
+      select: {
+        id: true,
+        username: true,
+        role_id: true,
+        purok: true,
+        meter_number: true,
+        full_name: true,
+        address: true,
+        phone: true,
+        email: true,
+        role: {
+          select: {
+            name: true
+          }
+        }
+      },
+      orderBy: { username: 'asc' }
+    });
+
+    console.log('Found users in purok', purok, ':', users.length);
+
+    const consumers = users.map(user => ({
+      ...user,
+      id: user.id.toString(),
+      role_id: user.role_id.toString()
+    }));
+
+    res.json(consumers);
+  } catch (error: any) {
+    console.error("Get Consumers by Purok Error:", error);
     res.status(500).json({ error: error.message });
   }
 });
