@@ -51,6 +51,35 @@ export const getIssues = async (req: Request, res: Response) => {
   }
 };
 
+export const getIssueById = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    const issue = await prisma.issues.findUnique({
+      where: { id: Number(id) },
+      include: {
+        user: {
+          select: {
+            id: true,
+            username: true,
+            full_name: true,
+            address: true,
+          },
+        },
+      },
+    });
+
+    if (!issue) {
+      return res.status(404).json({ error: 'Issue not found' });
+    }
+
+    res.status(200).json({ success: true, issue: serializeBigInt(issue) });
+  } catch (error: any) {
+    console.error('Get Issue By ID Error:', error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
 export const updateIssue = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
@@ -75,7 +104,14 @@ export const updateIssue = async (req: Request, res: Response) => {
     if (fixingDate) {
       console.log('Sending FCM notification for fixing date:', fixingDate);
       const message = `Your issue has been scheduled for fixing on ${new Date(fixingDate).toLocaleDateString()}.`;
-      await sendFCMNotification(Number(updatedIssue.user_id), 'Issue Update', message);
+      const data = {
+        type: 'issue_update',
+        issueId: String(updatedIssue.id),
+        description: updatedIssue.description,
+        fixingDate: fixingDate,
+        reportedDate: updatedIssue.reported_date.toISOString(),
+      };
+      await sendFCMNotification(Number(updatedIssue.user_id), 'Issue Update', message, data);
     } else {
       console.log('No fixing date provided, skipping FCM notification');
     }

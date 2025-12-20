@@ -1,5 +1,5 @@
 import express from 'express';
-import { createIssue, getIssues, updateIssue, registerDeviceToken } from '../controllers/issueController';
+import { createIssue, getIssues, getIssueById, updateIssue, registerDeviceToken } from '../controllers/issueController';
 
 const router = express.Router();
 
@@ -8,6 +8,9 @@ router.post('/issues', createIssue);
 
 // Get all issues
 router.get('/issues', getIssues);
+
+// Get a specific issue by ID
+router.get('/issues/:id', getIssueById);
 
 // Update an issue
 router.put('/issues/:id', updateIssue);
