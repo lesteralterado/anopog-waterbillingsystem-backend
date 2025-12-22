@@ -23,7 +23,7 @@ import {
   getConsumersByPurok
 } from './controllers/userController';
 import { sendSMSMessage } from './controllers/smsController';
-import { createPayment, getPaymentFee, getPayments } from './services/paymentsService';
+import { createPayment, getPaymentFee, getPayments, getPaymentsByUser } from './services/paymentsService';
 import uploadRoute from './routes/upload.route';
 import readingRoute from "./routes/reading.route";
 import billsRoute from "./routes/bills.route";
@@ -664,26 +664,39 @@ app.post("/api/send-sms", sendSMSMessage);
 // Route: Record a payment from frontend
 app.post("/api/payments", async (req: Request, res: Response) => {
   try {
+    console.log('Payment request body:', req.body);
     const { bill_id, payment_date, payment_method, amount_paid } = req.body;
 
     if (!bill_id || !payment_date || !payment_method || amount_paid === undefined) {
+      console.log('Missing required fields');
       return res.status(400).json({ message: "Missing required fields: bill_id, payment_date, payment_method, amount_paid" });
     }
 
     // Validate payment method
     const validMethods = ['GCash', 'PayMaya', 'Credit/Debit Card', 'Bank Transfer', 'Over-the-Counter', 'Saved Cards (Visa/Mastercard)'];
     if (!validMethods.includes(payment_method)) {
+      console.log('Invalid payment method:', payment_method);
       return res.status(400).json({ message: "Invalid payment method" });
     }
 
+    // Check if bill exists
+    const billExists = await prisma.bills.findUnique({ where: { id: Number(bill_id) } });
+    if (!billExists) {
+      console.log('Bill not found:', bill_id);
+      return res.status(404).json({ message: "Bill not found" });
+    }
+
+    console.log('Creating payment...');
     // Create payment (DB) - fee is calculated automatically in the service
     const newPayment = await createPayment({ bill_id, payment_date, payment_method, amount_paid });
+    console.log('Payment created:', newPayment);
 
     // Update bill status to paid and set amount_due to 0
     await prisma.bills.update({
       where: { id: Number(bill_id) },
       data: { is_paid: true, amount_due: 0 },
     });
+    console.log('Bill updated');
 
     // Emit real-time event to admins
     io.emit("newPayment", {
@@ -720,6 +733,24 @@ app.get("/api/payments", async (req: Request, res: Response) => {
     res.status(200).json({ success: true, payments: serializeBigInt(payments) });
   } catch (error: any) {
     console.error("Get Payments Error:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Route: Get payment history for a specific user
+app.get("/api/user/payments/:userId", async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+
+    if (isNaN(Number(userId))) {
+      return res.status(400).json({ error: "Invalid user ID" });
+    }
+
+    const payments = await getPaymentsByUser(Number(userId));
+
+    res.status(200).json({ success: true, payments: serializeBigInt(payments) });
+  } catch (error: any) {
+    console.error("Get User Payments Error:", error);
     res.status(500).json({ error: error.message });
   }
 });

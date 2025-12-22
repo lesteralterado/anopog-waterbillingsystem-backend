@@ -51,3 +51,21 @@ export async function getPayments() {
 
   return payments;
 }
+
+export async function getPaymentsByUser(userId: number) {
+  const payments = await prisma.payments.findMany({
+    where: {
+      bill: {
+        user_id: userId,
+      },
+    },
+    include: {
+      bill: true,
+    },
+    orderBy: {
+      payment_date: 'desc',
+    },
+  });
+
+  return payments;
+}
