@@ -1,6 +1,7 @@
 import express from "express";
 import prisma from "../config/prisma";
 import { serializeBigInt } from "../utils/types";
+import { createPayment } from "../services/paymentsService";
 
 const router = express.Router();
 
@@ -56,6 +57,46 @@ router.get("/", async (req, res) => {
   } catch (error: any) {
     console.error("Get Bills Error:", error);
     res.status(500).json({ error: error.message });
+  }
+});
+
+// POST /api/bills/pay - Submit payment for a bill
+router.post("/pay", async (req, res) => {
+  try {
+    const { bill_id, payment_method, amount_paid } = req.body;
+
+    if (!bill_id || !payment_method || !amount_paid) {
+      return res.status(400).json({ error: "Missing bill_id, payment_method, or amount_paid" });
+    }
+
+    // Verify the bill exists and is not already paid
+    const bill = await prisma.bills.findUnique({
+      where: { id: Number(bill_id) },
+    });
+
+    if (!bill) {
+      return res.status(404).json({ error: "Bill not found" });
+    }
+
+    if (bill.is_paid) {
+      return res.status(400).json({ error: "Bill is already paid" });
+    }
+
+    // Create the payment and update bill
+    const payment = await createPayment({
+      bill_id: Number(bill_id),
+      payment_date: new Date(),
+      payment_method,
+      amount_paid: parseFloat(amount_paid),
+    });
+
+    res.status(201).json({
+      message: "Payment submitted successfully!",
+      data: serializeBigInt(payment),
+    });
+  } catch (error: any) {
+    console.error("❌ Error submitting payment:", error.message);
+    res.status(500).json({ error: "Server error", details: error.message });
   }
 });
 

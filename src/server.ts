@@ -50,6 +50,7 @@ interface CreatePaymentIntentBody {
   amount: number;
   paymentMethods?: string[];
   description?: string;
+  bill_id?: string | number;
 }
 
 
@@ -132,7 +133,8 @@ app.post('/api/create-payment-intent', async (req: Request<{}, {}, CreatePayment
     const {
       amount,
       paymentMethods = ['gcash', 'paymaya'],
-      description = 'Anopog Water Billing System'
+      description = 'Anopog Water Billing System',
+      bill_id
     } = req.body;
 
     // Validate amount
@@ -142,6 +144,9 @@ app.post('/api/create-payment-intent', async (req: Request<{}, {}, CreatePayment
         error: 'Invalid amount. Amount must be at least 1 PHP.'
       });
     }
+
+    // Include bill_id in description if provided
+    const finalDescription = bill_id ? `${description} - bill_id:${bill_id}` : description;
 
     // Create payment intent using PayMongo REST API
     const response = await paymongoAPI.post('/payment_intents', {
@@ -154,7 +159,7 @@ app.post('/api/create-payment-intent', async (req: Request<{}, {}, CreatePayment
           },
           currency: 'PHP',
           capture_type: 'automatic',
-          description: description,
+          description: finalDescription,
           statement_descriptor: 'Anopog'
         }
       }
@@ -213,7 +218,10 @@ app.post('/api/attach-payment-method', async (req: Request, res: Response) => {
 
     // Check if payment intent was successful
     const responseData = response.data as any;
-    if (responseData?.data?.attributes?.status === 'succeeded') {
+    const status = responseData?.data?.attributes?.status;
+    console.log('Payment intent status after attach:', status);
+
+    if (status === 'succeeded') {
       // Store payment in database if payment was successful
       if (billId && amount && paymentMethod) {
         try {
@@ -784,8 +792,8 @@ app.post('/api/webhooks/paymongo', async (req: Request, res: Response) => {
     // Extract payment details from webhook
     const { amount, source, description } = paymentData;
     
-    // Try to extract bill_id from description or metadata
-    // Format: "bill_id:123,amount:5000"
+    // Try to extract bill_id from description
+    // Format: "Anopog Water Billing System - bill_id:123"
     let billId: number | null = null;
     if (description && description.includes('bill_id:')) {
       const match = description.match(/bill_id:(\d+)/);

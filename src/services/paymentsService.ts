@@ -36,6 +36,12 @@ export async function createPayment(input: CreatePaymentInput) {
     } as any,
   });
 
+  // Update the bill to mark as paid
+  await prisma.bills.update({
+    where: { id: Number(bill_id) },
+    data: { is_paid: true },
+  });
+
   return newPayment;
 }
 
