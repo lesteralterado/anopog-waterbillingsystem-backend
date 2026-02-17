@@ -29,6 +29,7 @@ import readingRoute from "./routes/reading.route";
 import billsRoute from "./routes/bills.route";
 import issueRoute from "./routes/issue.route";
 import adminRoute from "./routes/admin.route";
+import settingsRoute from "./routes/settings.route";
 import { serializeBigInt } from './utils/types';
 import { setIo, emitToClients } from './services/socketService';
 import { sendFCMNotification } from './services/fcmService';
@@ -60,6 +61,7 @@ interface CreatePaymentIntentBody {
 app.use(cors());
 app.use(express.json());
 app.use("/api/readings", readingRoute);
+app.use("/api/settings", settingsRoute);
 app.use("/api/bills", billsRoute);
 app.use(bodyParser.json({ limit: '50mb' })); // Allow large images
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));

@@ -9,12 +9,27 @@ const router = express.Router();
 router.get("/", async (req, res) => {
   try {
     const bills = await prisma.bills.findMany({
+      select: {
+        id: true,
+        user_id: true,
+        meter_reading_id: true,
+        amount_due: true,
+        due_date: true,
+        is_paid: true,
+        previous_reading: true,
+        current_reading: true,
+        consumption: true,
+        rate_per_unit: true,
+        basic_charge: true,
+        penalties: true,
+        total_calculated: true,
+      },
       orderBy: {
         due_date: 'desc',
       },
     });
 
-    // Fetch user and meter_reading for each bill
+    // Fetch user for each bill
     const billsWithDetails = await Promise.all(
       bills.map(async (bill) => {
         const user = await prisma.users.findUnique({
@@ -26,18 +41,9 @@ router.get("/", async (req, res) => {
             address: true,
           },
         });
-
-        const meterReading = await prisma.meter_readings.findUnique({
-          where: { id: bill.meter_reading_id },
-          select: {
-            id: true,
-            reading_value: true,
-            reading_date: true,
-          },
-        });
-
-        const consumption = meterReading ? Number(meterReading.reading_value) : 0;
-
+        
+        const consumption = Number(bill.consumption) || 0;
+        
         return {
           billId: bill.id,
           consumer: user?.full_name || user?.username || 'Unknown',
@@ -45,6 +51,15 @@ router.get("/", async (req, res) => {
           consumption: consumption,
           dueDate: bill.due_date,
           status: bill.is_paid ? 'Paid' : 'Unpaid',
+          calculation: {
+            previousReading: bill.previous_reading ? Number(bill.previous_reading) : 0,
+            currentReading: Number(bill.current_reading),
+            consumption: Number(bill.consumption),
+            ratePerUnit: bill.rate_per_unit,
+            basicCharge: bill.basic_charge,
+            penalties: bill.penalties,
+            totalCalculated: bill.total_calculated
+          },
           actions: [], // For frontend actions like pay, view details
         };
       })

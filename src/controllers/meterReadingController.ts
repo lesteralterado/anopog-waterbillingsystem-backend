@@ -39,7 +39,14 @@ export async function createMeterReading(req: { body: { userId: any; readingValu
         meter_reading_id: Number(newReading.id),
         amount_due: totalAmount,
         due_date: dueDate,
-        is_paid: false
+        is_paid: false,
+        previous_reading: previousValue,
+        current_reading: readingValue,
+        consumption: consumption,
+        rate_per_unit: ratePerCubicMeter,
+        basic_charge: basicCharge,
+        penalties: penalties,
+        total_calculated: totalAmount
       }
     });
 

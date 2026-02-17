@@ -57,9 +57,19 @@ model bills {
   meter_reading_id BigInt
   amount_due       Float
   due_date         DateTime
-  is_paid          Boolean
+  is_paid          Boolean  @default(false)
   payments         payments[]
+
+  // New fields for calculation breakdown
+  previous_reading Decimal?  @db.Decimal  // Previous meter reading value
+  current_reading  Decimal?   @db.Decimal  // Current meter reading value
+  consumption      Decimal?   @db.Decimal  // Consumption (current - previous)
+  rate_per_unit    Float?      // Rate per cubic meter
+  basic_charge     Float?      // Fixed basic charge
+  penalties        Float?      // Any penalties applied
+  total_calculated Float?     // Calculated total (for verification)
 }
+
 
 model payments {
   id             BigInt   @id @default(autoincrement())
@@ -87,4 +97,58 @@ model notifications {
   message           String
   notification_date DateTime @db.Date
   user              users    @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+// System Settings Model
+model system_settings {
+  id                           BigInt   @id @default(autoincrement())
+  
+  // Water Billing Rates
+  water_rate_per_cubic_meter   Float    @default(15.00) // Rate per cubic meter
+  minimum_charge               Float    @default(50.00) // Minimum monthly charge
+  penalty_rate                 Float    @default(0.10) // Late payment penalty (10%)
+  
+  // Billing Cycle
+  billing_cycle                String   @default("monthly") // monthly, quarterly, bi-monthly
+  billing_day_of_month         Int      @default(1) // Day of month when billing cycle starts
+  
+  // Due Date Configuration
+  due_date_days                Int      @default(15) // Days after billing date when payment is due
+  grace_period_days            Int      @default(5) // Additional days before penalty is applied
+  
+  // Late Fee Calculation
+  late_fee_method              String   @default("percentage") // percentage, fixed, tiered
+  late_fee_fixed_amount        Float    @default(0.00) // Fixed late fee amount
+  late_fee_tier_1_days         Int      @default(30) // First tier days
+  late_fee_tier_1_amount       Float    @default(50.00) // First tier late fee
+  late_fee_tier_2_days         Int      @default(60) // Second tier days
+  late_fee_tier_2_amount       Float    @default(100.00) // Second tier late fee
+  
+  // Consumption Tiers (for tiered pricing)
+  tiered_pricing_enabled       Boolean  @default(false)
+  tier_1_threshold             Float    @default(10.00) // First tier: 0-10 cubic meters
+  tier_1_rate                  Float    @default(15.00)
+  tier_2_threshold             Float    @default(20.00) // Second tier: 11-20 cubic meters
+  tier_2_rate                  Float    @default(20.00)
+  tier_3_threshold             Float    @default(999.00) // Third tier: 21+ cubic meters
+  tier_3_rate                  Float    @default(25.00)
+  
+  // Meter Reading
+  meter_reading_frequency      String   @default("monthly") // monthly, bi-monthly
+  meter_reading_day             Int      @default(25) // Preferred day for meter reading
+  
+  // Notification Settings
+  sms_notifications_enabled    Boolean  @default(true)
+  email_notifications_enabled  Boolean  @default(true)
+  notification_days_before_due Int      @default(5) // Days before due date to send reminder
+  
+  // Company Information
+  company_name                 String   @default("Anopog Water Billing System")
+  company_address              String?
+  company_phone                String?
+  company_email                String?
+  
+  // System
+  created_at                   DateTime @default(now()) @db.Timestamp
+  updated_at                   DateTime @updatedAt @db.Timestamp
 }
